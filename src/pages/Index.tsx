@@ -30,6 +30,7 @@ const Index = () => {
       icon: Combine,
       href: "/merge",
       color: "from-blue-500 to-blue-600",
+      available: true,
     },
     {
       title: "Split PDF",
@@ -49,10 +50,26 @@ const Index = () => {
     {
       title: "PDF to Word",
       description:
-        "Convert PDF to Word in seconds. It's completely free and easy to use.",
+        "Easily convert your PDF files into easy to edit DOC and DOCX documents. The converted WORD document is almost 100% accurate.",
       icon: FileText,
       href: "/pdf-to-word",
       color: "from-orange-500 to-orange-600",
+    },
+    {
+      title: "PDF to PowerPoint",
+      description:
+        "Turn your PDF files into easy to edit PPT and PPTX slideshows.",
+      icon: FileText,
+      href: "/pdf-to-powerpoint",
+      color: "from-red-500 to-red-600",
+    },
+    {
+      title: "PDF to Excel",
+      description:
+        "Pull data straight from PDFs into Excel spreadsheets in a few short seconds.",
+      icon: FileText,
+      href: "/pdf-to-excel",
+      color: "from-emerald-500 to-emerald-600",
     },
     {
       title: "Word to PDF",
@@ -60,7 +77,32 @@ const Index = () => {
         "Make DOC and DOCX files easy to read by converting them to PDF.",
       icon: FileText,
       href: "/word-to-pdf",
-      color: "from-red-500 to-red-600",
+      color: "from-blue-600 to-blue-700",
+    },
+    {
+      title: "PowerPoint to PDF",
+      description:
+        "Make PPT and PPTX slideshows easy to view by converting them to PDF.",
+      icon: FileText,
+      href: "/powerpoint-to-pdf",
+      color: "from-red-600 to-red-700",
+    },
+    {
+      title: "Excel to PDF",
+      description:
+        "Make EXCEL spreadsheets easy to read by converting them to PDF.",
+      icon: FileText,
+      href: "/excel-to-pdf",
+      color: "from-emerald-600 to-emerald-700",
+    },
+    {
+      title: "Edit PDF",
+      description:
+        "Add text, images, shapes or freehand annotations to a PDF document. Edit the size, font, and color of the added content.",
+      icon: FileText,
+      href: "/edit-pdf",
+      color: "from-indigo-500 to-indigo-600",
+      isNew: true,
     },
     {
       title: "PDF to JPG",
@@ -69,6 +111,137 @@ const Index = () => {
       icon: FileImage,
       href: "/pdf-to-jpg",
       color: "from-pink-500 to-pink-600",
+    },
+    {
+      title: "JPG to PDF",
+      description:
+        "Convert JPG images to PDF in seconds. Easily adjust orientation and margins.",
+      icon: FileImage,
+      href: "/jpg-to-pdf",
+      color: "from-pink-600 to-pink-700",
+    },
+    {
+      title: "Sign PDF",
+      description:
+        "Sign yourself or request electronic signatures from others.",
+      icon: FileText,
+      href: "/sign-pdf",
+      color: "from-violet-500 to-violet-600",
+    },
+    {
+      title: "Watermark",
+      description:
+        "Stamp an image or text over your PDF in seconds. Choose the typography, transparency and position.",
+      icon: FileText,
+      href: "/watermark",
+      color: "from-cyan-500 to-cyan-600",
+    },
+    {
+      title: "Rotate PDF",
+      description:
+        "Rotate your PDFs the way you need them. You can even rotate multiple PDFs at once!",
+      icon: FileText,
+      href: "/rotate-pdf",
+      color: "from-teal-500 to-teal-600",
+    },
+    {
+      title: "HTML to PDF",
+      description:
+        "Convert webpages in HTML to PDF. Copy and paste the URL of the page you want and convert it to PDF with a click.",
+      icon: FileText,
+      href: "/html-to-pdf",
+      color: "from-amber-500 to-amber-600",
+    },
+    {
+      title: "Unlock PDF",
+      description:
+        "Remove PDF password security, giving you the freedom to use your PDFs as you want.",
+      icon: FileText,
+      href: "/unlock-pdf",
+      color: "from-lime-500 to-lime-600",
+    },
+    {
+      title: "Protect PDF",
+      description:
+        "Protect PDF files with a password. Encrypt PDF documents to prevent unauthorized access.",
+      icon: Shield,
+      href: "/protect-pdf",
+      color: "from-red-500 to-red-600",
+    },
+    {
+      title: "Organize PDF",
+      description:
+        "Sort pages of your PDF file however you like. Delete PDF pages or add PDF pages to your document at your convenience.",
+      icon: FileText,
+      href: "/organize-pdf",
+      color: "from-slate-500 to-slate-600",
+    },
+    {
+      title: "PDF to PDF/A",
+      description:
+        "Transform your PDF to PDF/A, the ISO-standardized version of PDF for long-term archiving. Your PDF will preserve formatting when accessed in the future.",
+      icon: FileText,
+      href: "/pdf-to-pdfa",
+      color: "from-gray-500 to-gray-600",
+    },
+    {
+      title: "Repair PDF",
+      description:
+        "Repair a damaged PDF and recover data from corrupt PDF. Fix PDF files with our Repair tool.",
+      icon: FileText,
+      href: "/repair-pdf",
+      color: "from-orange-600 to-orange-700",
+    },
+    {
+      title: "Page numbers",
+      description:
+        "Add page numbers into PDFs with ease. Choose your positions, dimensions, typography.",
+      icon: FileText,
+      href: "/page-numbers",
+      color: "from-purple-600 to-purple-700",
+    },
+    {
+      title: "Scan to PDF",
+      description:
+        "Capture document scans from your mobile device and send them instantly to your browser.",
+      icon: FileText,
+      href: "/scan-to-pdf",
+      color: "from-green-600 to-green-700",
+    },
+    {
+      title: "OCR PDF",
+      description:
+        "Easily convert scanned PDF into searchable and selectable documents.",
+      icon: FileText,
+      href: "/ocr-pdf",
+      color: "from-blue-700 to-blue-800",
+    },
+    {
+      title: "Compare PDF",
+      description:
+        "Show a side-by-side document comparison and easily spot changes between different file versions.",
+      icon: FileText,
+      href: "/compare-pdf",
+      color: "from-indigo-600 to-indigo-700",
+      isNew: true,
+    },
+    {
+      title: "Redact PDF",
+      description:
+        "Redact text and graphics to permanently remove sensitive information from a PDF.",
+      icon: FileText,
+      href: "/redact-pdf",
+      color: "from-red-700 to-red-800",
+      isNew: true,
+    },
+    {
+      title: "Crop PDF",
+      description:
+        "Crop margins of PDF documents or select specific areas, then apply the changes to one page or the whole document.",
+      icon: Scissors,
+      href: "/crop-pdf",
+      color: "from-green-700 to-green-800",
+      isNew: true,
     },
   ];
 
@@ -119,26 +292,36 @@ const Index = () => {
       {/* PDF Tools Grid */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {pdfTools.map((tool, index) => {
               const IconComponent = tool.icon;
               return (
                 <Link
                   key={tool.href}
                   to={tool.href}
-                  className="group bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-brand-red/20"
+                  className={`group bg-white rounded-xl p-4 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-brand-red/20 relative ${tool.available ? "ring-2 ring-green-200" : ""}`}
                 >
-                  <div className="flex items-start space-x-4">
-                    <div
-                      className={`w-12 h-12 rounded-lg bg-gradient-to-br ${tool.color} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-200`}
-                    >
-                      <IconComponent className="w-6 h-6 text-white" />
+                  {tool.isNew && (
+                    <div className="absolute -top-2 -right-2 bg-brand-red text-white text-xs font-bold px-2 py-1 rounded-full">
+                      New!
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-heading-small text-text-dark mb-2 group-hover:text-brand-red transition-colors duration-200">
+                  )}
+                  {tool.available && (
+                    <div className="absolute -top-2 -left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                      Live
+                    </div>
+                  )}
+                  <div className="flex items-start space-x-3">
+                    <div
+                      className={`w-10 h-10 rounded-lg bg-gradient-to-br ${tool.color} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-200`}
+                    >
+                      <IconComponent className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-semibold text-text-dark mb-1 group-hover:text-brand-red transition-colors duration-200 line-clamp-1">
                         {tool.title}
                       </h3>
-                      <p className="text-body-small text-text-light">
+                      <p className="text-xs text-text-light line-clamp-2">
                         {tool.description}
                       </p>
                     </div>
