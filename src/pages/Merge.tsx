@@ -14,8 +14,15 @@ import {
   Combine,
   CheckCircle,
   Loader2,
+  Crown,
+  AlertTriangle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PDFService } from "@/services/pdfService";
+import { UsageService } from "@/services/usageService";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import AuthModal from "@/components/auth/AuthModal";
 
 interface ProcessedFile {
   id: string;
@@ -28,6 +35,12 @@ const Merge = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [mergedFileUrl, setMergedFileUrl] = useState<string>("");
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [usageLimitReached, setUsageLimitReached] = useState(false);
+
+  const { user, isAuthenticated } = useAuth();
+  const { toast } = useToast();
 
   const handleFilesSelect = (newFiles: File[]) => {
     const processedFiles: ProcessedFile[] = newFiles.map((file) => ({
@@ -77,21 +90,89 @@ const Merge = () => {
   const handleMerge = async () => {
     if (files.length < 2) return;
 
+    // Check usage limits for non-premium users
+    if (!user?.isPremium) {
+      const canUse = await UsageService.trackUsage(
+        "merge",
+        files.reduce((sum, file) => sum + file.file.size, 0),
+      );
+
+      if (!canUse) {
+        setUsageLimitReached(true);
+        if (!isAuthenticated) {
+          setShowAuthModal(true);
+        }
+        return;
+      }
+    }
+
     setIsProcessing(true);
 
-    // Simulate processing time
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    try {
+      // Get total file size
+      const totalSize = files.reduce((sum, file) => sum + file.file.size, 0);
 
-    setIsProcessing(false);
-    setIsComplete(true);
+      // Check file size limits (25MB for free users, 100MB for premium)
+      const maxSize = user?.isPremium ? 100 * 1024 * 1024 : 25 * 1024 * 1024;
+      if (totalSize > maxSize) {
+        throw new Error(
+          `File size exceeds ${user?.isPremium ? "100MB" : "25MB"} limit`,
+        );
+      }
+
+      const mergedPdfBytes = await PDFService.mergePDFs(files);
+
+      // For premium users, upload to Cloudinary for sharing
+      if (user?.isPremium) {
+        const cloudinaryUrl = await PDFService.uploadToCloudinary(
+          mergedPdfBytes,
+          `merged-pdf-${Date.now()}.pdf`,
+        );
+        setMergedFileUrl(cloudinaryUrl);
+      }
+
+      // Download the merged file
+      PDFService.downloadFile(mergedPdfBytes, "merged-document.pdf");
+
+      setIsComplete(true);
+
+      toast({
+        title: "Success!",
+        description: "Your PDF files have been merged successfully.",
+      });
+    } catch (error: any) {
+      console.error("Error merging PDFs:", error);
+      toast({
+        title: "Error",
+        description:
+          error.message || "Failed to merge PDF files. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
-  const downloadMergedFile = () => {
-    // In a real app, this would download the actual merged PDF
-    const link = document.createElement("a");
-    link.href = "#"; // Would be the actual file URL
-    link.download = "merged-document.pdf";
-    link.click();
+  const downloadMergedFile = async () => {
+    if (mergedFileUrl) {
+      // Download from Cloudinary URL
+      const link = document.createElement("a");
+      link.href = mergedFileUrl;
+      link.download = "merged-document.pdf";
+      link.click();
+    } else {
+      // Re-merge and download
+      try {
+        const mergedPdfBytes = await PDFService.mergePDFs(files);
+        PDFService.downloadFile(mergedPdfBytes, "merged-document.pdf");
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to download file. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   return (
@@ -219,8 +300,60 @@ const Merge = () => {
               </div>
             )}
 
+            {/* Usage Limit Warning */}
+            {usageLimitReached && !isAuthenticated && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-center">
+                <AlertTriangle className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
+                <h3 className="text-heading-small text-text-dark mb-2">
+                  Daily Limit Reached
+                </h3>
+                <p className="text-body-medium text-text-light mb-4">
+                  You've used your 3 free PDF operations today. Sign up to
+                  continue!
+                </p>
+                <Button
+                  onClick={() => setShowAuthModal(true)}
+                  className="bg-brand-red hover:bg-red-600"
+                >
+                  Sign Up Free
+                </Button>
+              </div>
+            )}
+
+            {usageLimitReached && isAuthenticated && !user?.isPremium && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-center">
+                <Crown className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
+                <h3 className="text-heading-small text-text-dark mb-2">
+                  Upgrade to Premium
+                </h3>
+                <p className="text-body-medium text-text-light mb-4">
+                  You've reached your daily limit. Upgrade to Premium for
+                  unlimited access!
+                </p>
+                <Button
+                  className="bg-brand-yellow text-black hover:bg-yellow-400"
+                  asChild
+                >
+                  <Link to="/pricing">
+                    <Crown className="w-4 h-4 mr-2" />
+                    Upgrade Now
+                  </Link>
+                </Button>
+              </div>
+            )}
+
+            {/* Free Usage Counter */}
+            {!isAuthenticated && !usageLimitReached && (
+              <div className="text-center mb-4">
+                <p className="text-body-small text-text-light">
+                  Free users: {UsageService.getRemainingFreeUsage()}/3
+                  operations remaining today
+                </p>
+              </div>
+            )}
+
             {/* Merge Button */}
-            {files.length >= 2 && (
+            {files.length >= 2 && !usageLimitReached && (
               <div className="text-center">
                 <Button
                   size="lg"
@@ -329,6 +462,13 @@ const Merge = () => {
           </div>
         </div>
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        defaultTab="register"
+      />
     </div>
   );
 };
