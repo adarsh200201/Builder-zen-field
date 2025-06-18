@@ -14,17 +14,29 @@ import {
   FileImage,
   Shield,
   ChevronDown,
+  LogOut,
+  Settings,
+  CreditCard,
 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/contexts/AuthContext";
+import AuthModal from "@/components/auth/AuthModal";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showMegaMenu, setShowMegaMenu] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authModalTab, setAuthModalTab] = useState<"login" | "register">(
+    "login",
+  );
+
+  const { user, isAuthenticated, logout } = useAuth();
 
   const navItems = [
     { label: "Merge PDF", href: "/merge" },
@@ -322,15 +334,95 @@ const Header = () => {
             </DropdownMenu>
 
             {/* User Actions */}
-            <div className="hidden sm:flex items-center space-x-2">
-              <Button variant="ghost" size="sm">
-                <User className="w-4 h-4 mr-2" />
-                Login
-              </Button>
-              <Button size="sm" className="bg-brand-red hover:bg-red-600">
-                Sign Up
-              </Button>
-            </div>
+            {isAuthenticated ? (
+              <div className="hidden sm:flex items-center space-x-2">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="flex items-center space-x-2"
+                    >
+                      <div className="w-8 h-8 bg-gradient-to-br from-brand-red to-red-600 rounded-full flex items-center justify-center">
+                        <span className="text-white text-sm font-medium">
+                          {user?.name.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="flex flex-col items-start">
+                        <span className="text-sm font-medium">
+                          {user?.name}
+                        </span>
+                        {user?.isPremium && (
+                          <span className="text-xs text-brand-yellow">
+                            Premium
+                          </span>
+                        )}
+                      </div>
+                      <ChevronDown className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuItem asChild>
+                      <Link to="/dashboard" className="flex items-center">
+                        <User className="w-4 h-4 mr-2" />
+                        Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/settings" className="flex items-center">
+                        <Settings className="w-4 h-4 mr-2" />
+                        Settings
+                      </Link>
+                    </DropdownMenuItem>
+                    {!user?.isPremium && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/pricing" className="flex items-center">
+                          <Crown className="w-4 h-4 mr-2" />
+                          Upgrade to Premium
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    {user?.isPremium && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/billing" className="flex items-center">
+                          <CreditCard className="w-4 h-4 mr-2" />
+                          Billing
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={logout} className="text-red-600">
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Log out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            ) : (
+              <div className="hidden sm:flex items-center space-x-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setAuthModalTab("login");
+                    setShowAuthModal(true);
+                  }}
+                >
+                  <User className="w-4 h-4 mr-2" />
+                  Login
+                </Button>
+                <Button
+                  size="sm"
+                  className="bg-brand-red hover:bg-red-600"
+                  onClick={() => {
+                    setAuthModalTab("register");
+                    setShowAuthModal(true);
+                  }}
+                >
+                  Sign Up
+                </Button>
+              </div>
+            )}
 
             {/* Premium Button */}
             <Button
@@ -391,6 +483,13 @@ const Header = () => {
           </div>
         )}
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        defaultTab={authModalTab}
+      />
     </header>
   );
 };
