@@ -1,7 +1,5 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
-import FileUpload from "@/components/ui/file-upload";
 import { Button } from "@/components/ui/button";
 import {
   Combine,
@@ -9,7 +7,6 @@ import {
   Minimize,
   FileText,
   FileImage,
-  Download,
   Shield,
   Zap,
   Users,
@@ -20,8 +17,6 @@ import {
 } from "lucide-react";
 
 const Index = () => {
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-
   const pdfTools = [
     {
       title: "Merge PDF",
@@ -245,10 +240,6 @@ const Index = () => {
     },
   ];
 
-  const handleFilesSelect = (files: File[]) => {
-    setSelectedFiles(files);
-  };
-
   return (
     <div className="min-h-screen bg-bg-light">
       <Header />
@@ -265,26 +256,6 @@ const Index = () => {
               FREE and easy to use! Merge, split, compress, convert, rotate,
               unlock and watermark PDFs with just a few clicks.
             </p>
-          </div>
-
-          {/* Upload Section */}
-          <div className="max-w-2xl mx-auto mb-16">
-            <FileUpload
-              onFilesSelect={handleFilesSelect}
-              multiple={true}
-              maxSize={10}
-              className="animate-float"
-            />
-
-            {selectedFiles.length > 0 && (
-              <div className="mt-6 text-center">
-                <Button className="bg-brand-red hover:bg-red-600" size="lg">
-                  <Download className="w-5 h-5 mr-2" />
-                  Process {selectedFiles.length} file
-                  {selectedFiles.length > 1 ? "s" : ""}
-                </Button>
-              </div>
-            )}
           </div>
         </div>
       </section>
