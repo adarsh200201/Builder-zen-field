@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
+import AdSense from "@/components/ads/AdSense";
 import {
   Combine,
   Scissors,
@@ -301,6 +302,17 @@ const Index = () => {
               );
             })}
           </div>
+        </div>
+      </section>
+
+      {/* Ad Section */}
+      <section className="py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AdSense
+            adSlot="1234567890"
+            adFormat="horizontal"
+            className="max-w-4xl mx-auto"
+          />
         </div>
       </section>
 

@@ -11,6 +11,7 @@ import Compress from "./pages/Compress";
 import Convert from "./pages/Convert";
 import PdfToJpg from "./pages/PdfToJpg";
 import Pricing from "./pages/Pricing";
+import Dashboard from "./pages/Dashboard";
 import {
   PdfToPowerPoint,
   PdfToExcel,
@@ -77,6 +78,7 @@ const App = () => (
             <Route path="/redact-pdf" element={<RedactPdf />} />
             <Route path="/crop-pdf" element={<CropPdf />} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/tools" element={<Index />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
