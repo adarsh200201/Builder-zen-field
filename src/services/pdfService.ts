@@ -264,24 +264,35 @@ export class PDFService {
     fileCount: number,
     totalFileSize: number,
   ): Promise<boolean> {
+    // During 3-month free promotion, track usage locally without backend calls
     try {
-      const response = await fetch(`${this.API_URL}/usage/track`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...this.createHeaders(),
-        },
-        body: JSON.stringify({
-          toolUsed,
-          fileCount,
-          totalFileSize,
-          sessionId: this.getSessionId(),
-        }),
-      });
+      const usageData = {
+        toolUsed,
+        fileCount,
+        totalFileSize,
+        sessionId: this.getSessionId(),
+        timestamp: new Date().toISOString(),
+      };
 
-      return response.ok;
+      // Store usage data locally for analytics
+      const existingUsage = JSON.parse(
+        localStorage.getItem("pdfpage_usage") || "[]",
+      );
+      existingUsage.push(usageData);
+
+      // Keep only last 100 entries to prevent localStorage bloat
+      if (existingUsage.length > 100) {
+        existingUsage.splice(0, existingUsage.length - 100);
+      }
+
+      localStorage.setItem("pdfpage_usage", JSON.stringify(existingUsage));
+
+      console.log(
+        `📊 Usage tracked locally: ${toolUsed} - ${fileCount} files (${(totalFileSize / 1024 / 1024).toFixed(2)} MB)`,
+      );
+      return true;
     } catch (error) {
-      console.error("Error tracking usage:", error);
+      console.error("Error tracking usage locally:", error);
       return false;
     }
   }
