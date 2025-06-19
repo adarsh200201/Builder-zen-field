@@ -71,12 +71,17 @@ const PdfToJpg = () => {
       for (const file of files) {
         try {
           // Convert PDF pages to images
+          toast({
+            title: `🔄 Processing ${file.name}...`,
+            description: "Extracting real content from PDF pages",
+          });
+
           const imageUrls = await convertPdfToImages(file, quality, dpi);
           images.push(...imageUrls);
 
           toast({
             title: `✅ ${file.name} converted successfully`,
-            description: `Generated ${imageUrls.length} image(s)`,
+            description: `Generated ${imageUrls.length} real image(s) from PDF content`,
           });
         } catch (error) {
           console.error(`Error converting ${file.name}:`, error);
