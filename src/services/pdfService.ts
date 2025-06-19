@@ -9,27 +9,6 @@ export class PDFService {
   private static API_URL =
     import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-  // Simple network check to avoid fetch errors
-  private static async isBackendAvailable(): Promise<boolean> {
-    try {
-      // Simple fetch without AbortController to avoid signal issues
-      const response = await Promise.race([
-        fetch(`${this.API_URL}/health`, {
-          method: "HEAD", // Use HEAD for minimal data transfer
-        }),
-        new Promise<Response>((_, reject) =>
-          setTimeout(() => reject(new Error("Timeout")), 2000),
-        ),
-      ]);
-
-      return response.ok;
-    } catch (error) {
-      // Log for debugging but don't throw
-      console.log("Backend availability check failed:", error.message);
-      return false;
-    }
-  }
-
   // Get authentication token
   private static getToken(): string | null {
     return (
