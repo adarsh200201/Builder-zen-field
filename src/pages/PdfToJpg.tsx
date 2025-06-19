@@ -148,34 +148,27 @@ const PdfToJpg = () => {
       // Import PDF.js and configure properly
       const pdfjsLib = await import("pdfjs-dist");
 
-      // Configure worker with multiple fallback options
+      // Configure worker - use the most reliable approach
       if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-        const workerSources = [
-          // First try: Use the exact version match
-          `https://unpkg.com/pdfjs-dist@5.3.31/build/pdf.worker.min.js`,
-          // Fallback 1: Use Mozilla CDN
-          `https://mozilla.github.io/pdf.js/build/pdf.worker.mjs`,
-          // Fallback 2: Use cdnjs
-          `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.3.31/pdf.worker.min.mjs`,
-          // Fallback 3: Disable worker (slower but more compatible)
-          null,
-        ];
+        console.log("🔄 Configuring PDF.js worker...");
 
-        for (const workerSrc of workerSources) {
-          try {
-            if (workerSrc === null) {
-              console.log("🔄 Disabling PDF.js worker for compatibility...");
-              pdfjsLib.GlobalWorkerOptions.workerSrc = "";
-              break;
-            } else {
-              console.log(`🔄 Trying worker: ${workerSrc}`);
-              pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
-              break; // Use the first available worker
-            }
-          } catch (error) {
-            console.warn(`❌ Worker failed: ${workerSrc}`, error);
-            continue;
-          }
+        // For development and better compatibility, disable worker
+        // This makes PDF processing slower but much more reliable
+        console.log("🔄 Using workerless mode for maximum compatibility...");
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "";
+
+        // Alternative: try to use the node_modules version if available
+        try {
+          // Try to use the local worker from node_modules
+          const workerUrl = new URL(
+            "pdfjs-dist/build/pdf.worker.min.js",
+            import.meta.url,
+          );
+          console.log(`🔄 Attempting local worker: ${workerUrl.href}`);
+          // Comment out for now since it often fails in Vite
+          // pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl.href;
+        } catch (error) {
+          console.log("📝 Local worker not available, using workerless mode");
         }
       }
 
