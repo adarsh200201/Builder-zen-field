@@ -13,6 +13,7 @@ import PdfToJpg from "./pages/PdfToJpg";
 import Pricing from "./pages/Pricing";
 import Dashboard from "./pages/Dashboard";
 import Rotate from "./pages/Rotate";
+import TestAllTools from "./pages/TestAllTools";
 import {
   PdfToPowerPoint,
   PdfToExcel,
@@ -81,6 +82,7 @@ const App = () => (
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/rotate-pdf" element={<Rotate />} />
+            <Route path="/test-all-tools" element={<TestAllTools />} />
             <Route path="/tools" element={<Index />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

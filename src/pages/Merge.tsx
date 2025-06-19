@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PDFService } from "@/services/pdfService";
-import { UsageService } from "@/services/usageService";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import AuthModal from "@/components/auth/AuthModal";
@@ -27,7 +26,8 @@ import AuthModal from "@/components/auth/AuthModal";
 interface ProcessedFile {
   id: string;
   file: File;
-  preview?: string;
+  name: string;
+  size: number;
 }
 
 const Merge = () => {
@@ -46,6 +46,8 @@ const Merge = () => {
     const processedFiles: ProcessedFile[] = newFiles.map((file) => ({
       id: Math.random().toString(36).substr(2, 9),
       file,
+      name: file.name,
+      size: file.size,
     }));
     setFiles((prev) => [...prev, ...processedFiles]);
   };
@@ -90,27 +92,21 @@ const Merge = () => {
   const handleMerge = async () => {
     if (files.length < 2) return;
 
-    // Check usage limits for non-premium users
-    if (!user?.isPremium) {
-      const canUse = await UsageService.trackUsage(
-        "merge",
-        files.reduce((sum, file) => sum + file.file.size, 0),
-      );
-
-      if (!canUse) {
-        setUsageLimitReached(true);
-        if (!isAuthenticated) {
-          setShowAuthModal(true);
-        }
-        return;
+    // Check usage limits
+    const usageCheck = await PDFService.checkUsageLimit();
+    if (!usageCheck.canUpload) {
+      setUsageLimitReached(true);
+      if (!isAuthenticated) {
+        setShowAuthModal(true);
       }
+      return;
     }
 
     setIsProcessing(true);
 
     try {
       // Get total file size
-      const totalSize = files.reduce((sum, file) => sum + file.file.size, 0);
+      const totalSize = files.reduce((sum, file) => sum + file.size, 0);
 
       // Check file size limits (25MB for free users, 100MB for premium)
       const maxSize = user?.isPremium ? 100 * 1024 * 1024 : 25 * 1024 * 1024;
@@ -122,13 +118,21 @@ const Merge = () => {
 
       const mergedPdfBytes = await PDFService.mergePDFs(files);
 
+      // Track usage
+      await PDFService.trackUsage("merge", files.length, totalSize);
+
       // For premium users, upload to Cloudinary for sharing
       if (user?.isPremium) {
-        const cloudinaryUrl = await PDFService.uploadToCloudinary(
-          mergedPdfBytes,
-          `merged-pdf-${Date.now()}.pdf`,
-        );
-        setMergedFileUrl(cloudinaryUrl);
+        try {
+          const cloudinaryUrl = await PDFService.uploadToCloudinary(
+            mergedPdfBytes,
+            `merged-pdf-${Date.now()}.pdf`,
+          );
+          setMergedFileUrl(cloudinaryUrl);
+        } catch (cloudError) {
+          console.warn("Cloudinary upload failed:", cloudError);
+          // Continue without cloud upload
+        }
       }
 
       // Download the merged file
@@ -259,10 +263,10 @@ const Merge = () => {
 
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-text-dark truncate">
-                          {processedFile.file.name}
+                          {processedFile.name}
                         </p>
                         <p className="text-xs text-text-light">
-                          {formatFileSize(processedFile.file.size)}
+                          {formatFileSize(processedFile.size)}
                         </p>
                       </div>
 
@@ -345,10 +349,18 @@ const Merge = () => {
             {/* Free Usage Counter */}
             {!isAuthenticated && !usageLimitReached && (
               <div className="text-center mb-4">
-                <p className="text-body-small text-text-light">
-                  Free users: {UsageService.getRemainingFreeUsage()}/3
-                  operations remaining today
-                </p>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 max-w-md mx-auto">
+                  <p className="text-body-small text-blue-800">
+                    📊 Free users: 3 operations per day. <br />
+                    <Link
+                      to="/pricing"
+                      className="text-brand-red hover:underline"
+                    >
+                      Upgrade to Premium
+                    </Link>{" "}
+                    for unlimited access!
+                  </p>
+                </div>
               </div>
             )}
 
