@@ -280,13 +280,30 @@ const Dashboard = () => {
                 <CardTitle>Recent Activity</CardTitle>
               </CardHeader>
               <CardContent>
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-brand-red to-red-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm font-medium">
-                  {user?.name.charAt(0).toUpperCase()}
-                </span>
-              </div>
-                  </div>
+                <div className="space-y-4">
+                  {user?.lastActivity ? (
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-gradient-to-br from-brand-red to-red-600 rounded-full flex items-center justify-center">
+                        <FileText className="w-4 h-4 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-text-dark">
+                          PDF processed
+                        </p>
+                        <p className="text-xs text-text-light">
+                          {new Date(user.lastActivity).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                      <p className="text-text-light">No recent activity</p>
+                      <p className="text-sm text-text-light">
+                        Start processing PDFs to see your activity
+                      </p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
