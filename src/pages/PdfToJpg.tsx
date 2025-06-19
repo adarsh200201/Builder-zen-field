@@ -252,6 +252,19 @@ const PdfToJpg = () => {
     } catch (error) {
       console.error("PDF to images conversion failed:", error);
 
+      // Try fallback method for certain errors
+      if (
+        error.message.includes("version") ||
+        error.message.includes("Worker")
+      ) {
+        console.log("Attempting fallback PDF processing...");
+        try {
+          return await convertPdfToImagesBasic(file, quality);
+        } catch (fallbackError) {
+          console.error("Fallback conversion also failed:", fallbackError);
+        }
+      }
+
       // Provide specific error messages
       if (error.message.includes("Invalid PDF")) {
         throw new Error(
@@ -264,6 +277,13 @@ const PdfToJpg = () => {
       } else if (error.message.includes("corrupted")) {
         throw new Error(
           "PDF file appears to be corrupted. Please try a different file.",
+        );
+      } else if (
+        error.message.includes("version") ||
+        error.message.includes("Worker")
+      ) {
+        throw new Error(
+          "PDF processing library conflict. Please refresh the page and try again.",
         );
       } else {
         throw new Error(`Failed to convert PDF: ${error.message}`);
