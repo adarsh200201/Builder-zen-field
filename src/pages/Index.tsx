@@ -28,6 +28,7 @@ const Index = () => {
       href: "/merge",
       color: "from-blue-500 to-blue-600",
       available: true,
+      isWorking: true,
     },
     {
       title: "Split PDF",
@@ -36,6 +37,8 @@ const Index = () => {
       icon: Scissors,
       href: "/split",
       color: "from-green-500 to-green-600",
+      available: true,
+      isWorking: true,
     },
     {
       title: "Compress PDF",
@@ -43,6 +46,8 @@ const Index = () => {
       icon: Minimize,
       href: "/compress",
       color: "from-purple-500 to-purple-600",
+      available: true,
+      isWorking: true,
     },
     {
       title: "PDF to Word",
@@ -51,6 +56,9 @@ const Index = () => {
       icon: FileText,
       href: "/pdf-to-word",
       color: "from-orange-500 to-orange-600",
+      available: true,
+      isWorking: true,
+      isNew: true,
     },
     {
       title: "PDF to PowerPoint",
@@ -75,6 +83,9 @@ const Index = () => {
       icon: FileText,
       href: "/word-to-pdf",
       color: "from-blue-600 to-blue-700",
+      available: true,
+      isWorking: true,
+      isNew: true,
     },
     {
       title: "PowerPoint to PDF",
@@ -108,6 +119,9 @@ const Index = () => {
       icon: FileImage,
       href: "/pdf-to-jpg",
       color: "from-pink-500 to-pink-600",
+      available: true,
+      isWorking: true,
+      isNew: true,
     },
     {
       title: "JPG to PDF",
