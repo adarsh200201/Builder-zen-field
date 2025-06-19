@@ -99,7 +99,7 @@ export class PDFService {
     }
   }
 
-  // Split PDF using backend API
+  // Split PDF using backend API with client-side fallback
   static async splitPDF(file: File): Promise<Uint8Array[]> {
     try {
       const formData = new FormData();
@@ -122,7 +122,41 @@ export class PDFService {
       return [new Uint8Array(arrayBuffer)];
     } catch (error) {
       console.error("Error splitting PDF:", error);
+
+      // Check if it's a network error - fallback to client-side processing
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        console.warn("Backend unavailable, using client-side PDF splitting");
+        return await this.splitPDFClientSide(file);
+      }
+
       throw error;
+    }
+  }
+
+  // Client-side PDF splitting fallback
+  private static async splitPDFClientSide(file: File): Promise<Uint8Array[]> {
+    try {
+      const { PDFDocument } = await import("pdf-lib");
+
+      const arrayBuffer = await file.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(arrayBuffer);
+      const pageCount = pdfDoc.getPageCount();
+      const splitPDFs: Uint8Array[] = [];
+
+      // Split into individual pages
+      for (let i = 0; i < pageCount; i++) {
+        const newPdf = await PDFDocument.create();
+        const [page] = await newPdf.copyPages(pdfDoc, [i]);
+        newPdf.addPage(page);
+
+        const pdfBytes = await newPdf.save();
+        splitPDFs.push(pdfBytes);
+      }
+
+      return splitPDFs;
+    } catch (error) {
+      console.error("Error in client-side PDF splitting:", error);
+      throw new Error("Failed to split PDF file");
     }
   }
 
