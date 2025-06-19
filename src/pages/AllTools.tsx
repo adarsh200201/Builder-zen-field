@@ -1,12 +1,14 @@
 import ToolPlaceholder from "./ToolPlaceholder";
 import { FileText } from "lucide-react";
 
-// Generic tool placeholder for all remaining tools
+// Working tools now redirect to real implementations
 export const PdfToPowerPoint = () => (
   <ToolPlaceholder
     toolName="PDF to PowerPoint"
     toolDescription="Turn your PDF files into easy to edit PPT and PPTX slideshows."
     icon={<FileText className="w-12 h-12 text-red-500" />}
+    workingTool={true}
+    redirectTo="/pdf-to-powerpoint"
   />
 );
 
@@ -15,6 +17,8 @@ export const PdfToExcel = () => (
     toolName="PDF to Excel"
     toolDescription="Pull data straight from PDFs into Excel spreadsheets in a few short seconds."
     icon={<FileText className="w-12 h-12 text-emerald-500" />}
+    workingTool={true}
+    redirectTo="/pdf-to-excel"
   />
 );
 
@@ -23,6 +27,8 @@ export const WordToPdf = () => (
     toolName="Word to PDF"
     toolDescription="Make DOC and DOCX files easy to read by converting them to PDF."
     icon={<FileText className="w-12 h-12 text-blue-600" />}
+    workingTool={true}
+    redirectTo="/word-to-pdf"
   />
 );
 
