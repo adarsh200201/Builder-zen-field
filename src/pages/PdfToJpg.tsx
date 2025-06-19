@@ -103,11 +103,17 @@ const PdfToJpg = () => {
         );
 
         toast({
-          title: "Conversion completed!",
-          description: `Successfully converted ${files.length} PDF(s) to ${images.length} image(s).`,
+          title: "🎉 Conversion completed!",
+          description: `Successfully converted PDF(s) to ${images.length} image(s).`,
         });
       } else {
-        throw new Error("No images were generated");
+        toast({
+          title: "❌ Conversion failed",
+          description:
+            "No images could be generated from the selected PDF files. Please check if the files are valid and not password-protected.",
+          variant: "destructive",
+        });
+        return; // Don't throw error, just return
       }
     } catch (error) {
       console.error("Error converting PDF to JPG:", error);
