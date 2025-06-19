@@ -3,6 +3,7 @@ import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import AdSense from "@/components/ads/AdSense";
 import { PromoBanner } from "@/components/ui/promo-banner";
+import { ConnectivityTest } from "@/components/debug/ConnectivityTest";
 import {
   Combine,
   Scissors,
@@ -249,6 +250,11 @@ const Index = () => {
       {/* Promotional Banner */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         <PromoBanner />
+
+        {/* Debug Connectivity Test - Remove in production */}
+        <div className="mt-4">
+          <ConnectivityTest />
+        </div>
       </div>
 
       {/* Hero Section */}
