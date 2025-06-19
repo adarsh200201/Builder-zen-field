@@ -148,15 +148,11 @@ const PdfToJpg = () => {
       // Import PDF.js and configure properly
       const pdfjsLib = await import("pdfjs-dist");
 
-      // Configure worker with a reliable CDN that actually works
-      if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-        console.log("🔄 Configuring PDF.js worker...");
+      // Configure PDF.js 3.11.174 for workerless operation
+      console.log("🔄 Configuring PDF.js 3.11.174 for workerless operation...");
 
-        // Use jsDelivr CDN which is more reliable than unpkg
-        const workerUrl = `https://cdn.jsdelivr.net/npm/pdfjs-dist@5.3.31/build/pdf.worker.min.js`;
-        console.log(`🔄 Using reliable CDN worker: ${workerUrl}`);
-        pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
-      }
+      // This version can work without workers
+      pdfjsLib.GlobalWorkerOptions.workerSrc = false;
 
       console.log(
         "✅ PDF.js worker configured:",
@@ -171,12 +167,13 @@ const PdfToJpg = () => {
 
       const loadingTask = pdfjsLib.getDocument({
         data: arrayBuffer,
-        // Allow worker since we have a reliable CDN now
-        disableWorker: false,
+        // Disable worker completely for version 3.11.174
+        disableWorker: true,
         // Basic configuration for maximum compatibility
         verbosity: 0,
         isEvalSupported: false,
         useSystemFonts: true,
+        useWorkerFetch: false,
       });
 
       // Add progress tracking and better error handling
@@ -300,23 +297,24 @@ const PdfToJpg = () => {
     console.log("🔄 Using completely workerless PDF.js approach...");
 
     try {
-      // Import PDF.js with basic configuration
+      // Import PDF.js 3.11.174 for true workerless operation
       const pdfjsLib = await import("pdfjs-dist");
 
-      // Use a different reliable CDN as fallback
-      pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
+      // Version 3.11.174 supports true workerless operation
+      pdfjsLib.GlobalWorkerOptions.workerSrc = false;
 
       const arrayBuffer = await file.arrayBuffer();
       console.log(
         `📄 Workerless: PDF file loaded: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`,
       );
 
-      // Load PDF with basic configuration
+      // Load PDF with workerless configuration
       const loadingTask = pdfjsLib.getDocument({
         data: arrayBuffer,
-        disableWorker: false, // Allow worker with reliable CDN
+        disableWorker: true, // True workerless mode
         verbosity: 0,
         isEvalSupported: false,
+        useWorkerFetch: false,
       });
 
       const pdfDocument = await loadingTask.promise;
