@@ -167,11 +167,11 @@ const PdfToJpg = () => {
       throw new Error("PDF file is empty");
     }
 
-    // Load the PDF document
+    // Load the PDF document with simplified configuration
     const loadingTask = pdfjsLib.getDocument({
       data: arrayBuffer,
-      cMapUrl: "https://unpkg.com/pdfjs-dist@3.11.174/cmaps/",
-      cMapPacked: true,
+      // Basic configuration to avoid compatibility issues
+      verbosity: 0,
     });
 
     const pdfDocument = await loadingTask.promise;
