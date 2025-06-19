@@ -138,8 +138,8 @@ const PdfToJpg = () => {
 
       // Set worker source - PDF.js requires this to be specified
       if (!GlobalWorkerOptions.workerSrc) {
-        // Use the worker from unpkg which should match the installed version
-        GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${(await import("pdfjs-dist/package.json")).version}/build/pdf.worker.min.js`;
+        // Use unpkg with automatic version resolution
+        GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist/build/pdf.worker.min.js`;
       }
 
       // Load PDF with better error handling
