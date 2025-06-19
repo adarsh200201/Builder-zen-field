@@ -185,8 +185,8 @@ const PdfToJpg = () => {
 
       const loadingTask = pdfjsLib.getDocument({
         data: arrayBuffer,
-        // Try with worker first, but allow fallback
-        disableWorker: false,
+        // Disable worker for maximum compatibility
+        disableWorker: true,
         // Enable all types of content
         disableAutoFetch: false,
         disableStream: false,
@@ -194,6 +194,8 @@ const PdfToJpg = () => {
         verbosity: 0, // Reduce console noise
         isEvalSupported: false, // Better security
         useSystemFonts: true, // Use system fonts as fallback
+        // Additional compatibility settings
+        standardFontDataUrl: null, // Don't try to load external fonts
       });
 
       // Add progress tracking and better error handling
