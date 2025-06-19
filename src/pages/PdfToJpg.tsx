@@ -434,9 +434,13 @@ const PdfToJpg = () => {
             PDF to JPG
           </h1>
           <p className="text-body-large text-text-light max-w-2xl mx-auto">
-            Convert each PDF page into high-quality JPG images or extract all
-            images contained in a PDF.
+            Convert each PDF page into high-quality JPG images with real content
+            extraction from your PDF documents.
           </p>
+          <div className="mt-4 inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">
+            <span className="mr-2">✨</span>
+            Real PDF content extraction - Not just placeholders!
+          </div>
         </div>
 
         {/* Main Content */}
