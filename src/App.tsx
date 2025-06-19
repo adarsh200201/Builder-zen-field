@@ -12,6 +12,7 @@ import Compress from "./pages/Compress";
 import Convert from "./pages/Convert";
 import PdfToJpg from "./pages/PdfToJpg";
 import PdfToWord from "./pages/PdfToWord";
+import WordToPdf from "./pages/WordToPdf";
 import Pricing from "./pages/Pricing";
 import Dashboard from "./pages/Dashboard";
 import Rotate from "./pages/Rotate";
