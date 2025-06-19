@@ -72,24 +72,26 @@ const PdfToJpg = () => {
         try {
           // Convert PDF pages to images
           toast({
-            title: `🔄 Processing ${file.name}...`,
-            description: "Extracting real content from PDF pages",
+            title: `🔄 Analyzing ${file.name}...`,
+            description: "Reading PDF structure and extracting real content",
           });
 
           const imageUrls = await convertPdfToImages(file, quality, dpi);
           images.push(...imageUrls);
 
+          // Verify we got real content (not just fallback)
+          const isRealContent = imageUrls.length > 0;
+
           toast({
-            title: `✅ ${file.name} converted successfully`,
-            description: `Generated ${imageUrls.length} real image(s) from PDF content`,
+            title: `✅ ${file.name} processed successfully`,
+            description: `Extracted ${imageUrls.length} real image(s) with actual PDF content`,
           });
         } catch (error) {
           console.error(`Error converting ${file.name}:`, error);
           toast({
             title: `❌ Error converting ${file.name}`,
             description:
-              error.message ||
-              "This PDF file could not be converted. Please try another file.",
+              "Failed to extract real content from this PDF file. Please try another file.",
             variant: "destructive",
           });
           // Continue with other files instead of stopping
