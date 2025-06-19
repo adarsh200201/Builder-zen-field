@@ -68,7 +68,7 @@ export const processPayment = async (
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
       amount: planType === "yearly" ? 299900 : 29900, // in paise
       currency: "INR",
-      name: "iLovePDF Premium",
+      name: "PdfPage Premium",
       description: `${planType === "yearly" ? "Yearly" : "Monthly"} Premium Subscription`,
       image: "/favicon.ico",
       order_id: orderId,
