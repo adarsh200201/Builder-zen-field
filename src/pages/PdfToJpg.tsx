@@ -136,9 +136,19 @@ const PdfToJpg = () => {
     try {
       const { getDocument, GlobalWorkerOptions } = await import("pdfjs-dist");
 
-      // Set worker source with fallback
+      // Let PDF.js handle worker loading automatically to avoid version mismatches
+      // Only set worker if not already set
       if (!GlobalWorkerOptions.workerSrc) {
-        GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
+        try {
+          // Try to import the worker from the same package
+          const workerSrc = await import(
+            "pdfjs-dist/build/pdf.worker.min.js?url"
+          );
+          GlobalWorkerOptions.workerSrc = workerSrc.default;
+        } catch {
+          // Fallback: let PDF.js handle it automatically
+          console.log("Using PDF.js automatic worker loading");
+        }
       }
 
       // Load PDF with better error handling
