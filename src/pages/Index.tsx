@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import AdSense from "@/components/ads/AdSense";
+import { PromoBanner } from "@/components/ui/promo-banner";
 import {
   Combine,
   Scissors,
@@ -244,6 +245,11 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-bg-light">
       <Header />
+
+      {/* Promotional Banner */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        <PromoBanner />
+      </div>
 
       {/* Hero Section */}
       <section className="relative py-16 lg:py-24">

@@ -111,9 +111,7 @@ const Merge = () => {
       // Check file size limits (25MB for free users, 100MB for premium)
       const maxSize = user?.isPremium ? 100 * 1024 * 1024 : 25 * 1024 * 1024;
       if (totalSize > maxSize) {
-        throw new Error(
-          `File size exceeds ${user?.isPremium ? "100MB" : "25MB"} limit`,
-        );
+        throw new Error(`File size exceeds ${user?.isPremium ? '100MB' : '25MB'} limit`);
       }
 
       const mergedPdfBytes = await PDFService.mergePDFs(files);
@@ -126,7 +124,7 @@ const Merge = () => {
         try {
           const cloudinaryUrl = await PDFService.uploadToCloudinary(
             mergedPdfBytes,
-            `merged-pdf-${Date.now()}.pdf`,
+            `merged-pdf-${Date.now()}.pdf`
           );
           setMergedFileUrl(cloudinaryUrl);
         } catch (cloudError) {
@@ -144,12 +142,12 @@ const Merge = () => {
         title: "Success!",
         description: "Your PDF files have been merged successfully.",
       });
+
     } catch (error: any) {
       console.error("Error merging PDFs:", error);
       toast({
         title: "Error",
-        description:
-          error.message || "Failed to merge PDF files. Please try again.",
+        description: error.message || "Failed to merge PDF files. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -184,7 +182,9 @@ const Merge = () => {
       <Header />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Breadcrumb */}
+        <PromoBanner className="mb-8" />
+
+        <div className="text-center mb-8">
         <div className="flex items-center space-x-2 mb-8">
           <Link
             to="/"
@@ -312,8 +312,7 @@ const Merge = () => {
                   Daily Limit Reached
                 </h3>
                 <p className="text-body-medium text-text-light mb-4">
-                  You've used your 3 free PDF operations today. Sign up to
-                  continue!
+                  You've used your 3 free PDF operations today. Sign up to continue!
                 </p>
                 <Button
                   onClick={() => setShowAuthModal(true)}
@@ -331,8 +330,7 @@ const Merge = () => {
                   Upgrade to Premium
                 </h3>
                 <p className="text-body-medium text-text-light mb-4">
-                  You've reached your daily limit. Upgrade to Premium for
-                  unlimited access!
+                  You've reached your daily limit. Upgrade to Premium for unlimited access!
                 </p>
                 <Button
                   className="bg-brand-yellow text-black hover:bg-yellow-400"
@@ -352,13 +350,9 @@ const Merge = () => {
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 max-w-md mx-auto">
                   <p className="text-body-small text-blue-800">
                     📊 Free users: 3 operations per day. <br />
-                    <Link
-                      to="/pricing"
-                      className="text-brand-red hover:underline"
-                    >
+                    <Link to="/pricing" className="text-brand-red hover:underline">
                       Upgrade to Premium
-                    </Link>{" "}
-                    for unlimited access!
+                    </Link> for unlimited access!
                   </p>
                 </div>
               </div>
