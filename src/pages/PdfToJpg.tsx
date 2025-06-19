@@ -148,28 +148,14 @@ const PdfToJpg = () => {
       // Import PDF.js and configure properly
       const pdfjsLib = await import("pdfjs-dist");
 
-      // Configure worker - use the most reliable approach
+      // Configure worker with a reliable CDN that actually works
       if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
         console.log("🔄 Configuring PDF.js worker...");
 
-        // For development and better compatibility, disable worker
-        // This makes PDF processing slower but much more reliable
-        console.log("🔄 Using workerless mode for maximum compatibility...");
-        pdfjsLib.GlobalWorkerOptions.workerSrc = "";
-
-        // Alternative: try to use the node_modules version if available
-        try {
-          // Try to use the local worker from node_modules
-          const workerUrl = new URL(
-            "pdfjs-dist/build/pdf.worker.min.js",
-            import.meta.url,
-          );
-          console.log(`🔄 Attempting local worker: ${workerUrl.href}`);
-          // Comment out for now since it often fails in Vite
-          // pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl.href;
-        } catch (error) {
-          console.log("📝 Local worker not available, using workerless mode");
-        }
+        // Use jsDelivr CDN which is more reliable than unpkg
+        const workerUrl = `https://cdn.jsdelivr.net/npm/pdfjs-dist@5.3.31/build/pdf.worker.min.js`;
+        console.log(`🔄 Using reliable CDN worker: ${workerUrl}`);
+        pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
       }
 
       console.log(
@@ -185,17 +171,12 @@ const PdfToJpg = () => {
 
       const loadingTask = pdfjsLib.getDocument({
         data: arrayBuffer,
-        // Disable worker for maximum compatibility
-        disableWorker: true,
-        // Enable all types of content
-        disableAutoFetch: false,
-        disableStream: false,
-        // Add more compatibility options
-        verbosity: 0, // Reduce console noise
-        isEvalSupported: false, // Better security
-        useSystemFonts: true, // Use system fonts as fallback
-        // Additional compatibility settings
-        standardFontDataUrl: null, // Don't try to load external fonts
+        // Allow worker since we have a reliable CDN now
+        disableWorker: false,
+        // Basic configuration for maximum compatibility
+        verbosity: 0,
+        isEvalSupported: false,
+        useSystemFonts: true,
       });
 
       // Add progress tracking and better error handling
@@ -319,28 +300,23 @@ const PdfToJpg = () => {
     console.log("🔄 Using completely workerless PDF.js approach...");
 
     try {
-      // Import PDF.js without any worker configuration
+      // Import PDF.js with basic configuration
       const pdfjsLib = await import("pdfjs-dist");
 
-      // Force disable all workers
-      pdfjsLib.GlobalWorkerOptions.workerSrc = "";
+      // Use a different reliable CDN as fallback
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
 
       const arrayBuffer = await file.arrayBuffer();
       console.log(
         `📄 Workerless: PDF file loaded: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`,
       );
 
-      // Load PDF with all worker features disabled
+      // Load PDF with basic configuration
       const loadingTask = pdfjsLib.getDocument({
         data: arrayBuffer,
-        disableWorker: true,
-        disableAutoFetch: true,
-        disableStream: true,
+        disableWorker: false, // Allow worker with reliable CDN
         verbosity: 0,
         isEvalSupported: false,
-        useSystemFonts: false,
-        standardFontDataUrl: null,
-        useWorkerFetch: false,
       });
 
       const pdfDocument = await loadingTask.promise;
