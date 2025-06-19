@@ -165,15 +165,14 @@ const PdfToJpg = () => {
     );
 
     try {
-      // Import PDF.js 2.16.105 which supports true workerless operation
+      // Import PDF.js 2.16.105 and configure with working worker
       const pdfjsLib = await import("pdfjs-dist");
 
-      // For version 2.16.105, we can completely disable workers
-      pdfjsLib.GlobalWorkerOptions.workerSrc = "";
+      // Use a working CDN URL for PDF.js 2.16.105 worker
+      const workerUrl = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js`;
+      pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
 
-      console.log(
-        "✅ PDF.js 2.16.105 configured for workerless visual rendering",
-      );
+      console.log(`✅ PDF.js 2.16.105 configured with worker: ${workerUrl}`);
 
       // Load PDF document
       const arrayBuffer = await file.arrayBuffer();
@@ -373,7 +372,7 @@ const PdfToJpg = () => {
               `• Original dimensions: ${pageInfo.width} × ${pageInfo.height} points`,
               `• Output resolution: ${dpi} DPI`,
               `• Compression quality: ${quality}%`,
-              `�� Source file: ${file.name}`,
+              `• Source file: ${file.name}`,
               "",
               "The PDF processing has completed successfully, and this image",
               "represents the actual content from your original document.",
