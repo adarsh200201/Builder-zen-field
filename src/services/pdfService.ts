@@ -9,6 +9,25 @@ export class PDFService {
   private static API_URL =
     import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
+  // Simple network check to avoid fetch errors
+  private static async isBackendAvailable(): Promise<boolean> {
+    try {
+      // Quick ping with minimal timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+      const response = await fetch(`${this.API_URL}/health`, {
+        method: "HEAD", // Use HEAD for minimal data transfer
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+      return response.ok;
+    } catch {
+      return false;
+    }
+  }
+
   // Get authentication token
   private static getToken(): string | null {
     return (
