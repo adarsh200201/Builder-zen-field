@@ -138,15 +138,32 @@ const PdfToJpg = () => {
     quality: number,
     dpi: number,
   ): Promise<string[]> => {
-    console.log("🔄 Converting real PDF content to JPG images...");
+    console.log("🔄 Extracting real PDF content to JPG images...");
 
     try {
-      // First try real PDF.js processing
-      return await convertPdfToImagesReal(file, quality, dpi);
+      // Try multiple methods to ensure real content extraction
+      const methods = [
+        () => convertPdfWithPdfJs(file, quality, dpi),
+        () => convertPdfWithPdfLib(file, quality, dpi),
+        () => convertPdfWithFileReader(file, quality, dpi),
+      ];
+
+      for (const method of methods) {
+        try {
+          const result = await method();
+          if (result && result.length > 0) {
+            console.log("✅ Successfully extracted real PDF content");
+            return result;
+          }
+        } catch (error) {
+          console.warn("Method failed, trying next:", error.message);
+        }
+      }
+
+      throw new Error("All real content extraction methods failed");
     } catch (error) {
-      console.warn("Real PDF processing failed, using fallback:", error);
-      // If real processing fails, use the professional fallback
-      return await convertPdfToImagesBasic(file, quality, dpi);
+      console.error("Real PDF processing failed:", error);
+      throw error;
     }
   };
 
