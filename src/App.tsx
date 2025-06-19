@@ -20,7 +20,6 @@ import TestAllTools from "./pages/TestAllTools";
 import {
   PdfToPowerPoint,
   PdfToExcel,
-  WordToPdf,
   PowerPointToPdf,
   ExcelToPdf,
   EditPdf,
