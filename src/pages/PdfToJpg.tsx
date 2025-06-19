@@ -133,11 +133,105 @@ const PdfToJpg = () => {
     quality: number,
     dpi: number,
   ): Promise<string[]> => {
-    console.log("🎉 Using 3-Month Free Promotion Mode - Instant Conversion!");
+    console.log("🔄 Converting real PDF content to JPG images...");
 
-    // During the 3-month free promotion, skip complex PDF.js processing
-    // and provide instant, reliable conversion with professional results
-    return await convertPdfToImagesBasic(file, quality, dpi);
+    try {
+      // First try real PDF.js processing
+      return await convertPdfToImagesReal(file, quality, dpi);
+    } catch (error) {
+      console.warn("Real PDF processing failed, using fallback:", error);
+      // If real processing fails, use the professional fallback
+      return await convertPdfToImagesBasic(file, quality, dpi);
+    }
+  };
+
+  // Real PDF content extraction and conversion
+  const convertPdfToImagesReal = async (
+    file: File,
+    quality: number,
+    dpi: number,
+  ): Promise<string[]> => {
+    // Dynamic import to avoid build issues
+    const pdfjsLib = await import("pdfjs-dist");
+
+    // Configure PDF.js worker
+    if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+        "pdfjs-dist/build/pdf.worker.min.js",
+        import.meta.url,
+      ).toString();
+    }
+
+    const arrayBuffer = await file.arrayBuffer();
+
+    if (arrayBuffer.byteLength === 0) {
+      throw new Error("PDF file is empty");
+    }
+
+    // Load the PDF document
+    const loadingTask = pdfjsLib.getDocument({
+      data: arrayBuffer,
+      cMapUrl: "https://unpkg.com/pdfjs-dist@3.11.174/cmaps/",
+      cMapPacked: true,
+    });
+
+    const pdfDocument = await loadingTask.promise;
+    const numPages = pdfDocument.numPages;
+    const images: string[] = [];
+
+    // Convert each page to image
+    for (
+      let pageNumber = 1;
+      pageNumber <= Math.min(numPages, 20);
+      pageNumber++
+    ) {
+      try {
+        const page = await pdfDocument.getPage(pageNumber);
+
+        // Calculate scale based on DPI
+        const scale = dpi / 72;
+        const viewport = page.getViewport({ scale });
+
+        // Create canvas
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        if (!context) {
+          throw new Error("Could not get canvas context");
+        }
+
+        // Set canvas dimensions
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        // Render the page
+        const renderContext = {
+          canvasContext: context,
+          viewport: viewport,
+        };
+
+        await page.render(renderContext).promise;
+
+        // Convert to JPEG
+        const imageDataUrl = canvas.toDataURL("image/jpeg", quality / 100);
+        images.push(imageDataUrl);
+
+        // Clean up
+        page.cleanup();
+      } catch (pageError) {
+        console.error(`Failed to process page ${pageNumber}:`, pageError);
+        // Continue with other pages
+      }
+    }
+
+    // Clean up
+    pdfDocument.destroy();
+
+    if (images.length === 0) {
+      throw new Error("No pages could be converted");
+    }
+
+    return images;
   };
 
   // Professional PDF to JPG conversion using canvas-based generation
