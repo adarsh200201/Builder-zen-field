@@ -2,13 +2,13 @@
 
 ## Quick Start to Enable Real Functionality
 
-To make your iLovePDF clone fully functional and start earning money, you need to set up a backend API. Here's the quickest way:
+To make your PdfPage platform fully functional and start earning money, you need to set up a backend API. Here's the quickest way:
 
 ### 1. Create Backend Project Structure
 
 ```bash
-mkdir ilovepdf-backend
-cd ilovepdf-backend
+mkdir pdfpage-backend
+cd pdfpage-backend
 npm init -y
 npm install express mongoose bcryptjs jsonwebtoken cors dotenv razorpay cloudinary multer helmet express-rate-limit
 npm install -D nodemon
@@ -27,8 +27,8 @@ SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=urbanride219@gmail.com
 SMTP_PASS=xzdlmsvmlzytmzpn
-EMAIL_FROM=noreply@ilovepdf.com
-EMAIL_FROM_NAME=iLovePDF
+EMAIL_FROM=noreply@pdfpage.com
+EMAIL_FROM_NAME=PdfPage
 
 # Cloudinary Configuration
 CLOUDINARY_CLOUD_NAME=dj8qhuudz

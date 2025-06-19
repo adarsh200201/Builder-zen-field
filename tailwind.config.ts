@@ -19,7 +19,7 @@ export default {
     },
     extend: {
       colors: {
-        // ILovePDF Brand Colors
+        // PdfPage Brand Colors
         brand: {
           red: "rgb(229, 50, 45)",
           yellow: "rgb(255, 194, 51)",
@@ -84,7 +84,7 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       fontSize: {
-        // Custom font sizes matching ilovepdf
+        // Custom font sizes for PdfPage
         "heading-large": ["42px", { lineHeight: "52px", fontWeight: "600" }],
         "heading-medium": ["28px", { lineHeight: "30px", fontWeight: "500" }],
         "heading-small": ["20px", { lineHeight: "28px", fontWeight: "500" }],
