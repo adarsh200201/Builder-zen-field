@@ -540,7 +540,6 @@ const Index = () => {
               © 2025 PdfPage. All rights reserved.
             </p>
           </div>
-                </p>
                 <div className="flex items-center space-x-4">
                   <Link to="/privacy" className="text-body-small text-text-light hover:text-brand-red transition-colors duration-200">Privacy</Link>
                   <Link to="/terms" className="text-body-small text-text-light hover:text-brand-red transition-colors duration-200">Terms</Link>
