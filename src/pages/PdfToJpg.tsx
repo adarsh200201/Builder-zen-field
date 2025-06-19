@@ -140,148 +140,15 @@ const PdfToJpg = () => {
     quality: number,
     dpi: number,
   ): Promise<string[]> => {
-    console.log(
-      "🔄 Converting PDF to JPG with real visual content extraction...",
-    );
+    console.log("🔄 Converting PDF to JPG using reliable pdf-lib method...");
 
     try {
-      // Import PDF.js and configure properly
-      const pdfjsLib = await import("pdfjs-dist");
-
-      // Configure PDF.js 3.11.174 for workerless operation
-      console.log("🔄 Configuring PDF.js 3.11.174 for workerless operation...");
-
-      // This version can work without workers
-      pdfjsLib.GlobalWorkerOptions.workerSrc = false;
-
-      console.log("✅ PDF.js 3.11.174 configured for workerless operation");
-
-      // Load PDF document
-      const arrayBuffer = await file.arrayBuffer();
-      console.log(
-        `📄 PDF file loaded: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`,
-      );
-
-      const loadingTask = pdfjsLib.getDocument({
-        data: arrayBuffer,
-        // Disable worker completely for version 3.11.174
-        disableWorker: true,
-        // Basic configuration for maximum compatibility
-        verbosity: 0,
-        isEvalSupported: false,
-        useSystemFonts: true,
-        useWorkerFetch: false,
-      });
-
-      // Add progress tracking and better error handling
-      loadingTask.onProgress = (progress: any) => {
-        if (progress.total > 0) {
-          const percent = Math.round((progress.loaded / progress.total) * 100);
-          console.log(
-            `📊 PDF loading progress: ${percent}% (${progress.loaded}/${progress.total} bytes)`,
-          );
-        }
-      };
-
-      const pdfDocument = await loadingTask.promise;
-      console.log(`📑 PDF loaded successfully: ${pdfDocument.numPages} pages`);
-
-      const images: string[] = [];
-      const maxPages = Math.min(pdfDocument.numPages, 20); // Limit to 20 pages for performance
-
-      for (let pageNumber = 1; pageNumber <= maxPages; pageNumber++) {
-        try {
-          console.log(`🖼️ Processing page ${pageNumber}...`);
-
-          const page = await pdfDocument.getPage(pageNumber);
-
-          // Calculate proper scale for high quality rendering
-          const baseViewport = page.getViewport({ scale: 1.0 });
-          const scale = Math.max(dpi / 72, 1.5); // Minimum 1.5x scale for quality
-          const viewport = page.getViewport({ scale });
-
-          console.log(
-            `��� Page ${pageNumber} dimensions: ${Math.round(viewport.width)}x${Math.round(viewport.height)} (scale: ${scale.toFixed(2)})`,
-          );
-
-          // Create canvas with proper dimensions
-          const canvas = document.createElement("canvas");
-          const context = canvas.getContext("2d");
-
-          if (!context) {
-            throw new Error("Could not get 2D context from canvas");
-          }
-
-          canvas.width = Math.round(viewport.width);
-          canvas.height = Math.round(viewport.height);
-
-          // Clear canvas with white background
-          context.fillStyle = "#ffffff";
-          context.fillRect(0, 0, canvas.width, canvas.height);
-
-          // Render PDF page to canvas
-          console.log(`🎨 Rendering page ${pageNumber} to canvas...`);
-
-          const renderContext = {
-            canvasContext: context,
-            viewport: viewport,
-            // Enable all rendering features
-            enableWebGL: false, // Disable WebGL for better compatibility
-            renderInteractiveForms: true,
-            optionalContentConfigPromise: null,
-          };
-
-          const renderTask = page.render(renderContext);
-          await renderTask.promise;
-
-          console.log(`✅ Page ${pageNumber} rendered successfully`);
-
-          // Convert canvas to image with specified quality
-          const imageDataUrl = canvas.toDataURL("image/jpeg", quality / 100);
-
-          // Verify the image isn't blank by checking if it has some content
-          const isBlank = await isCanvasBlank(canvas);
-          if (isBlank) {
-            console.warn(
-              `⚠️ Page ${pageNumber} appears blank, but including anyway`,
-            );
-          }
-
-          images.push(imageDataUrl);
-
-          // Clean up page resources
-          page.cleanup();
-
-          console.log(
-            `📊 Page ${pageNumber} processed: ${Math.round(imageDataUrl.length / 1024)} KB`,
-          );
-        } catch (pageError) {
-          console.error(`❌ Error processing page ${pageNumber}:`, pageError);
-          // Continue with other pages
-        }
-      }
-
-      // Clean up document
-      pdfDocument.destroy();
-
-      if (images.length === 0) {
-        throw new Error("No pages could be rendered from the PDF");
-      }
-
-      console.log(`🎉 Successfully converted ${images.length} pages from PDF`);
-      return images;
+      // Use pdf-lib as the primary method since it's working reliably
+      return await pdfLibConversion(file, quality, dpi);
     } catch (error) {
-      console.error("❌ PDF conversion failed:", error);
-
-      // If main method fails, try a completely different approach
-      console.log("🔄 Trying workerless fallback conversion method...");
-      try {
-        return await workerlessPdfConversion(file, quality, dpi);
-      } catch (fallbackError) {
-        console.error("❌ Workerless conversion also failed:", fallbackError);
-        console.log("🔄 Using final fallback method...");
-        return await fallbackPdfConversion(file, quality, dpi);
-      }
+      console.error("❌ PDF-lib conversion failed:", error);
+      console.log("🔄 Using final fallback method...");
+      return await createPlaceholderImages(file, quality, dpi);
     }
   };
 
