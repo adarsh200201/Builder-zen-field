@@ -70,17 +70,24 @@ const PdfToJpg = () => {
 
       for (const file of files) {
         try {
-          // Convert PDF pages to images using pdf-lib and canvas
+          // Convert PDF pages to images
           const imageUrls = await convertPdfToImages(file, quality, dpi);
           images.push(...imageUrls);
+
+          toast({
+            title: `✅ ${file.name} converted successfully`,
+            description: `Generated ${imageUrls.length} image(s)`,
+          });
         } catch (error) {
           console.error(`Error converting ${file.name}:`, error);
           toast({
-            title: `Error converting ${file.name}`,
+            title: `❌ Error converting ${file.name}`,
             description:
+              error.message ||
               "This PDF file could not be converted. Please try another file.",
             variant: "destructive",
           });
+          // Continue with other files instead of stopping
         }
       }
 
