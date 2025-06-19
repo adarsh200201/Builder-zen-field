@@ -120,38 +120,132 @@ const PdfToJpg = () => {
     quality: number,
     dpi: number,
   ): Promise<string[]> => {
-    const { getDocument, GlobalWorkerOptions } = await import("pdfjs-dist");
+    try {
+      const { getDocument, GlobalWorkerOptions } = await import("pdfjs-dist");
 
-    // Set worker source
-    GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
+      // Set worker source with fallback
+      if (!GlobalWorkerOptions.workerSrc) {
+        GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
+      }
 
-    const arrayBuffer = await file.arrayBuffer();
-    const pdf = await getDocument({ data: arrayBuffer }).promise;
-    const images: string[] = [];
+      // Load PDF with better error handling
+      const arrayBuffer = await file.arrayBuffer();
 
-    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
-      const page = await pdf.getPage(pageNumber);
-      const scale = dpi / 72; // Convert DPI to scale
-      const viewport = page.getViewport({ scale });
+      if (arrayBuffer.byteLength === 0) {
+        throw new Error("PDF file appears to be empty or corrupted");
+      }
 
-      // Create canvas
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d")!;
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
+      const loadingTask = getDocument({
+        data: arrayBuffer,
+        cMapUrl: "//cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/",
+        cMapPacked: true,
+      });
 
-      // Render page to canvas
-      await page.render({
-        canvasContext: context,
-        viewport: viewport,
-      }).promise;
+      const pdf = await loadingTask.promise;
+      const images: string[] = [];
 
-      // Convert canvas to image
-      const imageDataUrl = canvas.toDataURL("image/jpeg", quality / 100);
-      images.push(imageDataUrl);
+      if (pdf.numPages === 0) {
+        throw new Error("PDF file contains no pages");
+      }
+
+      // Limit pages for performance (max 20 pages for free users)
+      const maxPages = Math.min(pdf.numPages, 20);
+
+      for (let pageNumber = 1; pageNumber <= maxPages; pageNumber++) {
+        try {
+          const page = await pdf.getPage(pageNumber);
+          const scale = Math.min(dpi / 72, 3); // Limit scale for performance
+          const viewport = page.getViewport({ scale });
+
+          // Create canvas with size limits
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+
+          if (!context) {
+            throw new Error("Failed to get canvas 2D context");
+          }
+
+          // Limit canvas size to prevent memory issues
+          const maxWidth = 2000;
+          const maxHeight = 2000;
+
+          if (viewport.width > maxWidth || viewport.height > maxHeight) {
+            const scaleDown = Math.min(
+              maxWidth / viewport.width,
+              maxHeight / viewport.height,
+            );
+            const newViewport = page.getViewport({ scale: scale * scaleDown });
+            canvas.width = newViewport.width;
+            canvas.height = newViewport.height;
+
+            // Render with adjusted viewport
+            await page.render({
+              canvasContext: context,
+              viewport: newViewport,
+            }).promise;
+          } else {
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+
+            // Render page to canvas
+            await page.render({
+              canvasContext: context,
+              viewport: viewport,
+            }).promise;
+          }
+
+          // Convert canvas to image with error handling
+          try {
+            const imageDataUrl = canvas.toDataURL("image/jpeg", quality / 100);
+            if (imageDataUrl && imageDataUrl !== "data:,") {
+              images.push(imageDataUrl);
+            }
+          } catch (canvasError) {
+            console.warn(
+              `Failed to convert page ${pageNumber} to image:`,
+              canvasError,
+            );
+            // Continue with other pages
+          }
+
+          // Clean up
+          page.cleanup();
+        } catch (pageError) {
+          console.warn(`Failed to process page ${pageNumber}:`, pageError);
+          // Continue with other pages instead of failing completely
+        }
+      }
+
+      // Clean up PDF document
+      pdf.destroy();
+
+      if (images.length === 0) {
+        throw new Error(
+          "No pages could be converted to images. The PDF may be corrupted or password-protected.",
+        );
+      }
+
+      return images;
+    } catch (error) {
+      console.error("PDF to images conversion failed:", error);
+
+      // Provide specific error messages
+      if (error.message.includes("Invalid PDF")) {
+        throw new Error(
+          "Invalid PDF file. Please check the file and try again.",
+        );
+      } else if (error.message.includes("password")) {
+        throw new Error(
+          "PDF is password-protected. Please remove the password and try again.",
+        );
+      } else if (error.message.includes("corrupted")) {
+        throw new Error(
+          "PDF file appears to be corrupted. Please try a different file.",
+        );
+      } else {
+        throw new Error(`Failed to convert PDF: ${error.message}`);
+      }
     }
-
-    return images;
   };
 
   const downloadImage = (imageUrl: string, index: number) => {
