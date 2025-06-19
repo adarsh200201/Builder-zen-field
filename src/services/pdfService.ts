@@ -266,6 +266,19 @@ export class PDFService {
     message: string;
     isPremium: boolean;
   }> {
+    // Quick network check first
+    const isOnline = await this.isBackendAvailable();
+
+    if (!isOnline) {
+      console.log("Backend offline, using free promotion mode");
+      return {
+        canUpload: true,
+        remainingUploads: "unlimited",
+        message: "🚀 3 Months Free Access - All tools unlocked!",
+        isPremium: true, // Treat as premium during free period
+      };
+    }
+
     try {
       const sessionId = this.getSessionId();
       const response = await fetch(
@@ -283,24 +296,12 @@ export class PDFService {
     } catch (error) {
       console.error("Error checking usage limit:", error);
 
-      // Check if it's a network error
-      if (error instanceof TypeError && error.message.includes("fetch")) {
-        console.warn("Backend service unavailable, using fallback mode");
-        // During the 3-month free promotion, allow unlimited access
-        return {
-          canUpload: true,
-          remainingUploads: "unlimited",
-          message: "🚀 3 Months Free Access - All tools unlocked!",
-          isPremium: true, // Treat as premium during free period
-        };
-      }
-
-      // Return default for other errors
+      // Fallback to free promotion mode
       return {
         canUpload: true,
-        remainingUploads: 3,
-        message: "Unable to check limits - temporary issue",
-        isPremium: false,
+        remainingUploads: "unlimited",
+        message: "🚀 3 Months Free Access - All tools unlocked!",
+        isPremium: true,
       };
     }
   }
