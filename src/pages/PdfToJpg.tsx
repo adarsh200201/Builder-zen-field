@@ -160,8 +160,8 @@ const PdfToJpg = () => {
 
       const loadingTask = getDocument({
         data: arrayBuffer,
-        cMapUrl: "//cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/",
-        cMapPacked: true,
+        // Simplified config to avoid version conflicts
+        verbosity: 0, // Reduce console noise
       });
 
       const pdf = await loadingTask.promise;
