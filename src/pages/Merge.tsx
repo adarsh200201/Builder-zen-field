@@ -186,7 +186,7 @@ const Merge = () => {
         <PromoBanner className="mb-8" />
 
         <div className="text-center mb-8">
-        <div className="flex items-center space-x-2 mb-8">
+          <div className="flex items-center space-x-2 mb-8">
           <Link
             to="/"
             className="text-body-medium text-text-light hover:text-brand-red"
