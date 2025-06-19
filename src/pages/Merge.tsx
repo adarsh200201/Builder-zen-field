@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import FileUpload from "@/components/ui/file-upload";
 import { Button } from "@/components/ui/button";
+import { PromoBanner } from "@/components/ui/promo-banner";
 import {
   ArrowLeft,
   Download,
