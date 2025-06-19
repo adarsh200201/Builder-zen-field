@@ -268,18 +268,15 @@ export class PDFService {
     message: string;
     isPremium: boolean;
   }> {
-    // Quick network check first
-    const isOnline = await this.isBackendAvailable();
-
-    if (!isOnline) {
-      console.log("Backend offline, using free promotion mode");
-      return {
-        canUpload: true,
-        remainingUploads: "unlimited",
-        message: "🚀 3 Months Free Access - All tools unlocked!",
-        isPremium: true, // Treat as premium during free period
-      };
-    }
+    // During 3-month free promotion, always allow unlimited access
+    // Skip backend check to avoid fetch errors
+    console.log("Using 3-month free promotion mode");
+    return {
+      canUpload: true,
+      remainingUploads: "unlimited",
+      message: "🚀 3 Months Free Access - All tools unlocked!",
+      isPremium: true, // Treat as premium during free period
+    };
 
     try {
       const sessionId = this.getSessionId();
