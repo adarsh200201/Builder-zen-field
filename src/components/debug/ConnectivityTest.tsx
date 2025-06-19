@@ -14,12 +14,19 @@ export function ConnectivityTest() {
         import.meta.env.VITE_API_URL || "http://localhost:5000/api";
       console.log("Testing connection to:", apiUrl);
 
+      // Create abort controller for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
       const response = await fetch(`${apiUrl}/health`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         const data = await response.json();
@@ -44,6 +51,11 @@ export function ConnectivityTest() {
     try {
       const apiUrl =
         import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+      // Create abort controller for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
       const response = await fetch(
         `${apiUrl}/usage/check-limit?sessionId=test123`,
         {
@@ -51,8 +63,11 @@ export function ConnectivityTest() {
           headers: {
             "Content-Type": "application/json",
           },
+          signal: controller.signal,
         },
       );
+
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         const data = await response.json();
