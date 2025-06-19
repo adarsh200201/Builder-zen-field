@@ -11,6 +11,7 @@ import Split from "./pages/Split";
 import Compress from "./pages/Compress";
 import Convert from "./pages/Convert";
 import PdfToJpg from "./pages/PdfToJpg";
+import PdfToWord from "./pages/PdfToWord";
 import Pricing from "./pages/Pricing";
 import Dashboard from "./pages/Dashboard";
 import Rotate from "./pages/Rotate";
@@ -57,7 +58,7 @@ const App = () => (
             <Route path="/compress" element={<Compress />} />
             <Route path="/convert" element={<Convert />} />
             <Route path="/pdf-to-jpg" element={<PdfToJpg />} />
-            <Route path="/pdf-to-word" element={<Convert />} />
+            <Route path="/pdf-to-word" element={<PdfToWord />} />
             <Route path="/pdf-to-powerpoint" element={<PdfToPowerPoint />} />
             <Route path="/pdf-to-excel" element={<PdfToExcel />} />
             <Route path="/word-to-pdf" element={<WordToPdf />} />
