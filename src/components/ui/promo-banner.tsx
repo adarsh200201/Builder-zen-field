@@ -19,12 +19,19 @@ export function PromoBanner({
   useEffect(() => {
     const checkBackend = async () => {
       try {
+        // Create abort controller for timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+
         const response = await fetch(
           `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/health`,
-          { method: "GET", signal: AbortSignal.timeout(3000) },
+          { method: "GET", signal: controller.signal },
         );
+
+        clearTimeout(timeoutId);
         setIsOfflineMode(!response.ok);
-      } catch {
+      } catch (error) {
+        console.log("Backend check failed:", error.message);
         setIsOfflineMode(true);
       }
     };
