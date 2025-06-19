@@ -136,9 +136,11 @@ const PdfToJpg = () => {
     try {
       const { getDocument, GlobalWorkerOptions } = await import("pdfjs-dist");
 
-      // Let PDF.js handle worker loading automatically to avoid version mismatches
-      // Don't set worker explicitly to avoid conflicts
-      console.log("Using PDF.js automatic worker configuration");
+      // Set worker source - PDF.js requires this to be specified
+      if (!GlobalWorkerOptions.workerSrc) {
+        // Use the worker from unpkg which should match the installed version
+        GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${(await import("pdfjs-dist/package.json")).version}/build/pdf.worker.min.js`;
+      }
 
       // Load PDF with better error handling
       const arrayBuffer = await file.arrayBuffer();
