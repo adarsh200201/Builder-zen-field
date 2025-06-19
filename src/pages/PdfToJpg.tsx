@@ -154,10 +154,7 @@ const PdfToJpg = () => {
       // This version can work without workers
       pdfjsLib.GlobalWorkerOptions.workerSrc = false;
 
-      console.log(
-        "✅ PDF.js worker configured:",
-        pdfjsLib.GlobalWorkerOptions.workerSrc || "disabled",
-      );
+      console.log("✅ PDF.js 3.11.174 configured for workerless operation");
 
       // Load PDF document
       const arrayBuffer = await file.arrayBuffer();
@@ -204,7 +201,7 @@ const PdfToJpg = () => {
           const viewport = page.getViewport({ scale });
 
           console.log(
-            `📐 Page ${pageNumber} dimensions: ${Math.round(viewport.width)}x${Math.round(viewport.height)} (scale: ${scale.toFixed(2)})`,
+            `��� Page ${pageNumber} dimensions: ${Math.round(viewport.width)}x${Math.round(viewport.height)} (scale: ${scale.toFixed(2)})`,
           );
 
           // Create canvas with proper dimensions
