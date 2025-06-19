@@ -41,7 +41,7 @@ export function PromoBanner({
         </p>
 
         <div className="space-y-3 text-sm md:text-base font-medium">
-          <p>
+          <p className="hidden md:block">
             ✨ No limits, no locks, no need to pay,
             <br />
             All our tools are{" "}
@@ -53,7 +53,7 @@ export function PromoBanner({
             Unlimited access, come and play!
           </p>
 
-          <p>
+          <p className="hidden md:block">
             For <strong className="text-brand-red">3 full months</strong>, enjoy
             our best,
             <br />
@@ -63,6 +63,13 @@ export function PromoBanner({
             <br />
             But for now, just{" "}
             <strong className="text-brand-red">enjoy the flow</strong>. 🚀
+          </p>
+
+          {/* Mobile version - shorter text */}
+          <p className="md:hidden">
+            ✨ <strong className="text-brand-red">3 months FREE!</strong> All
+            tools unlocked, no limits, no ads. Try everything before deciding on
+            a plan! 🚀
           </p>
 
           <p className="font-bold text-brand-red border-t border-brand-red/20 pt-3">
