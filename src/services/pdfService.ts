@@ -170,11 +170,24 @@ export class PDFService {
       return await response.json();
     } catch (error) {
       console.error("Error checking usage limit:", error);
-      // Return default for offline/error scenarios
+
+      // Check if it's a network error
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        console.warn("Backend service unavailable, using fallback mode");
+        // During the 3-month free promotion, allow unlimited access
+        return {
+          canUpload: true,
+          remainingUploads: "unlimited",
+          message: "🚀 3 Months Free Access - All tools unlocked!",
+          isPremium: true, // Treat as premium during free period
+        };
+      }
+
+      // Return default for other errors
       return {
         canUpload: true,
         remainingUploads: 3,
-        message: "Unable to check limits",
+        message: "Unable to check limits - temporary issue",
         isPremium: false,
       };
     }
