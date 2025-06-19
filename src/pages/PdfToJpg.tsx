@@ -192,12 +192,26 @@ const PdfToJpg = () => {
 
       const loadingTask = pdfjsLib.getDocument({
         data: arrayBuffer,
-        // Disable worker for better compatibility in some cases
+        // Try with worker first, but allow fallback
         disableWorker: false,
         // Enable all types of content
         disableAutoFetch: false,
         disableStream: false,
+        // Add more compatibility options
+        verbosity: 0, // Reduce console noise
+        isEvalSupported: false, // Better security
+        useSystemFonts: true, // Use system fonts as fallback
       });
+
+      // Add progress tracking and better error handling
+      loadingTask.onProgress = (progress: any) => {
+        if (progress.total > 0) {
+          const percent = Math.round((progress.loaded / progress.total) * 100);
+          console.log(
+            `📊 PDF loading progress: ${percent}% (${progress.loaded}/${progress.total} bytes)`,
+          );
+        }
+      };
 
       const pdfDocument = await loadingTask.promise;
       console.log(`📑 PDF loaded successfully: ${pdfDocument.numPages} pages`);
