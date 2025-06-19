@@ -310,6 +310,127 @@ const PdfToJpg = () => {
     }
   };
 
+  // Workerless PDF conversion method
+  const workerlessPdfConversion = async (
+    file: File,
+    quality: number,
+    dpi: number,
+  ): Promise<string[]> => {
+    console.log("🔄 Using completely workerless PDF.js approach...");
+
+    try {
+      // Import PDF.js without any worker configuration
+      const pdfjsLib = await import("pdfjs-dist");
+
+      // Force disable all workers
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "";
+
+      const arrayBuffer = await file.arrayBuffer();
+      console.log(
+        `📄 Workerless: PDF file loaded: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`,
+      );
+
+      // Load PDF with all worker features disabled
+      const loadingTask = pdfjsLib.getDocument({
+        data: arrayBuffer,
+        disableWorker: true,
+        disableAutoFetch: true,
+        disableStream: true,
+        verbosity: 0,
+        isEvalSupported: false,
+        useSystemFonts: false,
+        standardFontDataUrl: null,
+        useWorkerFetch: false,
+      });
+
+      const pdfDocument = await loadingTask.promise;
+      console.log(
+        `📑 Workerless: PDF loaded successfully: ${pdfDocument.numPages} pages`,
+      );
+
+      const images: string[] = [];
+      const maxPages = Math.min(pdfDocument.numPages, 15); // Limit for performance
+
+      for (let pageNumber = 1; pageNumber <= maxPages; pageNumber++) {
+        try {
+          console.log(`🖼️ Workerless: Processing page ${pageNumber}...`);
+
+          const page = await pdfDocument.getPage(pageNumber);
+
+          // Use a conservative scale for stability
+          const scale = Math.min(dpi / 72, 2.0); // Max 2x scale
+          const viewport = page.getViewport({ scale });
+
+          console.log(
+            `📐 Workerless: Page ${pageNumber} dimensions: ${Math.round(viewport.width)}x${Math.round(viewport.height)}`,
+          );
+
+          // Create canvas
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d", {
+            alpha: false, // No transparency for better performance
+            willReadFrequently: false,
+          });
+
+          if (!context) {
+            throw new Error("Could not get 2D context from canvas");
+          }
+
+          canvas.width = Math.round(viewport.width);
+          canvas.height = Math.round(viewport.height);
+
+          // White background
+          context.fillStyle = "#ffffff";
+          context.fillRect(0, 0, canvas.width, canvas.height);
+
+          // Render with minimal options for stability
+          const renderContext = {
+            canvasContext: context,
+            viewport: viewport,
+            enableWebGL: false,
+            renderInteractiveForms: false,
+            optionalContentConfigPromise: null,
+          };
+
+          const renderTask = page.render(renderContext);
+          await renderTask.promise;
+
+          console.log(
+            `✅ Workerless: Page ${pageNumber} rendered successfully`,
+          );
+
+          // Convert to image
+          const imageDataUrl = canvas.toDataURL("image/jpeg", quality / 100);
+          images.push(imageDataUrl);
+
+          // Clean up
+          page.cleanup();
+        } catch (pageError) {
+          console.error(
+            `❌ Workerless: Error processing page ${pageNumber}:`,
+            pageError,
+          );
+          // Continue with other pages
+        }
+      }
+
+      // Clean up document
+      pdfDocument.destroy();
+
+      if (images.length === 0) {
+        throw new Error("No pages could be rendered in workerless mode");
+      }
+
+      console.log(
+        `🎉 Workerless: Successfully converted ${images.length} pages`,
+      );
+      return images;
+    } catch (error) {
+      console.error("❌ Workerless PDF conversion failed:", error);
+      throw error;
+    }
+  };
+
   // Helper function to check if canvas is blank
   const isCanvasBlank = (canvas: HTMLCanvasElement): Promise<boolean> => {
     return new Promise((resolve) => {
