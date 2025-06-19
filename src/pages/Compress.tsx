@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import FileUpload from "@/components/ui/file-upload";
 import { Button } from "@/components/ui/button";
+import { PromoBanner } from "@/components/ui/promo-banner";
 import { Slider } from "@/components/ui/slider";
 import {
   ArrowLeft,
@@ -146,7 +147,7 @@ const Compress = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <PromoBanner className="mb-8" />
 
-        <div className="text-center mb-8">
+        {/* Navigation */}
         <div className="flex items-center space-x-2 mb-8">
           <Link
             to="/"
