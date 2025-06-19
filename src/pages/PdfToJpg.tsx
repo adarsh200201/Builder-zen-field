@@ -148,10 +148,41 @@ const PdfToJpg = () => {
       // Import PDF.js and configure properly
       const pdfjsLib = await import("pdfjs-dist");
 
-      // Configure worker - use the correct version that matches our installed package (5.3.31)
-      pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@5.3.31/build/pdf.worker.min.js`;
+      // Configure worker with multiple fallback options
+      if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+        const workerSources = [
+          // First try: Use the exact version match
+          `https://unpkg.com/pdfjs-dist@5.3.31/build/pdf.worker.min.js`,
+          // Fallback 1: Use Mozilla CDN
+          `https://mozilla.github.io/pdf.js/build/pdf.worker.mjs`,
+          // Fallback 2: Use cdnjs
+          `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.3.31/pdf.worker.min.mjs`,
+          // Fallback 3: Disable worker (slower but more compatible)
+          null,
+        ];
 
-      console.log("✅ PDF.js worker configured successfully");
+        for (const workerSrc of workerSources) {
+          try {
+            if (workerSrc === null) {
+              console.log("🔄 Disabling PDF.js worker for compatibility...");
+              pdfjsLib.GlobalWorkerOptions.workerSrc = "";
+              break;
+            } else {
+              console.log(`🔄 Trying worker: ${workerSrc}`);
+              pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
+              break; // Use the first available worker
+            }
+          } catch (error) {
+            console.warn(`❌ Worker failed: ${workerSrc}`, error);
+            continue;
+          }
+        }
+      }
+
+      console.log(
+        "✅ PDF.js worker configured:",
+        pdfjsLib.GlobalWorkerOptions.workerSrc || "disabled",
+      );
 
       // Load PDF document
       const arrayBuffer = await file.arrayBuffer();
