@@ -12,6 +12,7 @@ import Convert from "./pages/Convert";
 import PdfToJpg from "./pages/PdfToJpg";
 import Pricing from "./pages/Pricing";
 import Dashboard from "./pages/Dashboard";
+import Rotate from "./pages/Rotate";
 import {
   PdfToPowerPoint,
   PdfToExcel,
@@ -79,6 +80,7 @@ const App = () => (
             <Route path="/crop-pdf" element={<CropPdf />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/rotate-pdf" element={<Rotate />} />
             <Route path="/tools" element={<Index />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
