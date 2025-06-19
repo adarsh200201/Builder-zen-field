@@ -148,8 +148,8 @@ const PdfToJpg = () => {
       // Import PDF.js and configure properly
       const pdfjsLib = await import("pdfjs-dist");
 
-      // Configure worker - use the exact version that matches our installed package
-      pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
+      // Configure worker - use the correct version that matches our installed package (5.3.31)
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@5.3.31/build/pdf.worker.min.js`;
 
       console.log("✅ PDF.js worker configured successfully");
 

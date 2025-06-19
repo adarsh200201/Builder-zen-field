@@ -15,10 +15,15 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
-    include: ["pdfjs-dist"],
+    include: ["pdfjs-dist", "pdfjs-dist/build/pdf.worker.min.js"],
+    exclude: ["pdfjs-dist/build/pdf.worker.js"],
   },
   worker: {
     format: "es",
+  },
+  define: {
+    // Help PDF.js work better in Vite
+    global: "globalThis",
   },
   assetsInclude: ["**/*.woff", "**/*.woff2"],
 }));
