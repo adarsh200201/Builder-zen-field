@@ -14,7 +14,9 @@ export class PDFService {
     try {
       // Quick ping with minimal timeout
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2000);
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+      }, 2000);
 
       const response = await fetch(`${this.API_URL}/health`, {
         method: "HEAD", // Use HEAD for minimal data transfer
@@ -23,7 +25,9 @@ export class PDFService {
 
       clearTimeout(timeoutId);
       return response.ok;
-    } catch {
+    } catch (error) {
+      // Log for debugging but don't throw
+      console.log("Backend availability check failed:", error.message);
       return false;
     }
   }
