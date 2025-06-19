@@ -1,5 +1,5 @@
-import { X, Wifi, WifiOff } from "lucide-react";
-import { useState, useEffect } from "react";
+import { X } from "lucide-react";
+import { useState } from "react";
 
 interface PromoBannerProps {
   className?: string;
@@ -13,30 +13,6 @@ export function PromoBanner({
   closeable = true,
 }: PromoBannerProps) {
   const [isVisible, setIsVisible] = useState(true);
-  const [isOfflineMode, setIsOfflineMode] = useState(false);
-
-  // Check if backend is available
-  useEffect(() => {
-    const checkBackend = async () => {
-      try {
-        // Create abort controller for timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3000);
-
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/health`,
-          { method: "GET", signal: controller.signal },
-        );
-
-        clearTimeout(timeoutId);
-        setIsOfflineMode(!response.ok);
-      } catch (error) {
-        console.log("Backend check failed:", error.message);
-        setIsOfflineMode(true);
-      }
-    };
-    checkBackend();
-  }, []);
 
   const handleClose = () => {
     setIsVisible(false);
@@ -60,17 +36,9 @@ export function PromoBanner({
       )}
 
       <div className="pr-8">
-        <div className="flex items-center gap-2 mb-3">
-          <p className="text-lg font-bold text-brand-red">
-            📣 <strong>Limited Time Offer:</strong>
-          </p>
-          {isOfflineMode && (
-            <div className="flex items-center gap-1 text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-              <WifiOff className="w-3 h-3" />
-              Offline Mode
-            </div>
-          )}
-        </div>
+        <p className="text-lg font-bold text-brand-red mb-3">
+          📣 <strong>Limited Time Offer:</strong>
+        </p>
 
         <div className="space-y-3 text-sm md:text-base font-medium">
           <p className="hidden md:block">
