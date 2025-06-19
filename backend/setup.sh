@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Setting up iLovePDF Backend..."
+echo "🚀 Setting up PdfPage Backend..."
 
 # Check if Node.js is installed
 if ! command -v node &> /dev/null; then
