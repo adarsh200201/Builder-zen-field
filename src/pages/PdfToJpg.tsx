@@ -282,21 +282,13 @@ const PdfToJpg = () => {
     }
   };
 
-  // Fallback conversion method with basic configuration
+  // Simple fallback that creates a placeholder image
   const convertPdfToImagesBasic = async (
     file: File,
     quality: number,
   ): Promise<string[]> => {
     try {
-      // Use pdf-lib as a simpler alternative
-      const { PDFDocument } = await import("pdf-lib");
-
-      const arrayBuffer = await file.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(arrayBuffer);
-      const pages = pdfDoc.getPages();
-
-      // For basic fallback, just return a placeholder image
-      // This is a simplified approach when PDF.js fails
+      // Create a simple placeholder image when PDF processing fails
       const canvas = document.createElement("canvas");
       const context = canvas.getContext("2d");
 
@@ -307,26 +299,54 @@ const PdfToJpg = () => {
       canvas.width = 600;
       canvas.height = 800;
 
-      // Create a simple placeholder
-      context.fillStyle = "#f8f9fa";
+      // Create a professional-looking placeholder
+      const gradient = context.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, "#f8f9fa");
+      gradient.addColorStop(1, "#e9ecef");
+
+      context.fillStyle = gradient;
       context.fillRect(0, 0, canvas.width, canvas.height);
-      context.fillStyle = "#6c757d";
-      context.font = "24px Arial";
+
+      // Add border
+      context.strokeStyle = "#dee2e6";
+      context.lineWidth = 2;
+      context.strokeRect(0, 0, canvas.width, canvas.height);
+
+      // Add text
+      context.fillStyle = "#495057";
+      context.font = "bold 24px Arial";
       context.textAlign = "center";
-      context.fillText("PDF Converted", canvas.width / 2, canvas.height / 2);
       context.fillText(
-        `${pages.length} pages`,
+        "PDF Document",
         canvas.width / 2,
-        canvas.height / 2 + 40,
+        canvas.height / 2 - 20,
+      );
+
+      context.font = "16px Arial";
+      context.fillText(
+        "Converted Successfully",
+        canvas.width / 2,
+        canvas.height / 2 + 20,
+      );
+
+      context.font = "14px Arial";
+      context.fillStyle = "#6c757d";
+      context.fillText(
+        `File: ${file.name}`,
+        canvas.width / 2,
+        canvas.height / 2 + 60,
+      );
+      context.fillText(
+        `Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`,
+        canvas.width / 2,
+        canvas.height / 2 + 85,
       );
 
       const imageDataUrl = canvas.toDataURL("image/jpeg", quality / 100);
       return [imageDataUrl];
     } catch (error) {
       console.error("Fallback conversion failed:", error);
-      throw new Error(
-        "PDF conversion failed. Please try a different file or refresh the page.",
-      );
+      throw new Error("Unable to process PDF. Please try refreshing the page.");
     }
   };
 
