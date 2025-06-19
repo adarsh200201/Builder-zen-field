@@ -182,10 +182,12 @@ const PdfToJpg = () => {
 
       const loadingTask = pdfjsLib.getDocument({
         data: arrayBuffer,
-        disableWorker: true,
+        disableWorker: false, // Allow worker since we have a proper URL
         verbosity: 0,
         isEvalSupported: false,
         useSystemFonts: true,
+        disableAutoFetch: false,
+        disableStream: false,
       });
 
       const pdfDocument = await loadingTask.promise;
