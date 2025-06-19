@@ -337,47 +337,6 @@ const PdfToJpg = () => {
     }
   };
 
-  // Helper function to check if canvas is blank
-  const isCanvasBlank = (canvas: HTMLCanvasElement): Promise<boolean> => {
-    return new Promise((resolve) => {
-      try {
-        const context = canvas.getContext("2d");
-        if (!context) {
-          resolve(true);
-          return;
-        }
-
-        const imageData = context.getImageData(
-          0,
-          0,
-          canvas.width,
-          canvas.height,
-        );
-        const data = imageData.data;
-
-        // Check if all pixels are white or transparent
-        let isBlank = true;
-        for (let i = 0; i < data.length; i += 4) {
-          const r = data[i];
-          const g = data[i + 1];
-          const b = data[i + 2];
-          const a = data[i + 3];
-
-          // If we find any non-white pixel with opacity, it's not blank
-          if (a > 0 && (r !== 255 || g !== 255 || b !== 255)) {
-            isBlank = false;
-            break;
-          }
-        }
-
-        resolve(isBlank);
-      } catch (error) {
-        console.warn("Error checking if canvas is blank:", error);
-        resolve(false); // Assume not blank if we can't check
-      }
-    });
-  };
-
   // Fallback conversion method that doesn't use PDF.js at all
   const fallbackPdfConversion = async (
     file: File,
