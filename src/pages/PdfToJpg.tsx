@@ -168,8 +168,15 @@ const PdfToJpg = () => {
       // Import PDF.js 2.16.105 and configure with working worker
       const pdfjsLib = await import("pdfjs-dist");
 
-      // Use a working CDN URL for PDF.js 2.16.105 worker
-      const workerUrl = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js`;
+      // Try multiple CDN URLs for PDF.js 2.16.105 worker
+      const workerUrls = [
+        `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js`,
+        `https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js`,
+        `https://cdn.jsdelivr.net/npm/pdfjs-dist@2.16.105/build/pdf.worker.min.js`,
+      ];
+
+      // Use the first URL as primary
+      const workerUrl = workerUrls[0];
       pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
 
       console.log(`✅ PDF.js 2.16.105 configured with worker: ${workerUrl}`);
