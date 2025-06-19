@@ -66,8 +66,8 @@ router.post(
       // Upload to Cloudinary
       const uploadOptions = {
         resource_type: "auto",
-        folder: `ilovepdf/${folder}`,
-        tags: [...tags, "ilovepdf", req.user._id.toString()],
+        folder: `pdfpage/${folder}`,
+        tags: [...tags, "pdfpage", req.user._id.toString()],
         context: {
           userId: req.user._id.toString(),
           userName: req.user.name,

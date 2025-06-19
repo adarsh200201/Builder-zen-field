@@ -91,8 +91,8 @@ router.post(
 
       // Set metadata
       mergedPdf.setTitle("Merged PDF Document");
-      mergedPdf.setProducer("iLovePDF");
-      mergedPdf.setCreator("iLovePDF");
+      mergedPdf.setProducer("PdfPage");
+      mergedPdf.setCreator("PdfPage");
       mergedPdf.setCreationDate(new Date());
 
       // Generate merged PDF
@@ -223,8 +223,8 @@ router.post(
       pdfDoc.setAuthor("");
       pdfDoc.setSubject("");
       pdfDoc.setKeywords([]);
-      pdfDoc.setProducer("iLovePDF Compressor");
-      pdfDoc.setCreator("iLovePDF");
+      pdfDoc.setProducer("PdfPage Compressor");
+      pdfDoc.setCreator("PdfPage");
 
       // Save with compression options
       const pdfBytes = await pdfDoc.save({
@@ -360,8 +360,8 @@ router.post(
 
         // Set metadata
         newPdf.setTitle(`Page ${i + 1} of ${file.originalname}`);
-        newPdf.setProducer("iLovePDF");
-        newPdf.setCreator("iLovePDF");
+        newPdf.setProducer("PdfPage");
+        newPdf.setCreator("PdfPage");
 
         const pdfBytes = await newPdf.save();
         splitPdfs.push({

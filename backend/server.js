@@ -61,7 +61,7 @@ app.use("/api/upload", require("./routes/upload"));
 app.get("/api/health", (req, res) => {
   res.status(200).json({
     status: "OK",
-    message: "iLovePDF API is running",
+    message: "PdfPage API is running",
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
   });

@@ -280,12 +280,12 @@ const Dashboard = () => {
                 <CardTitle>Recent Activity</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center text-sm">
-                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                    <span className="text-muted-foreground">
-                      No recent activity
-                    </span>
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="w-8 h-8 bg-gradient-to-br from-brand-red to-red-600 rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-sm font-medium">
+                  {user?.name.charAt(0).toUpperCase()}
+                </span>
+              </div>
                   </div>
                 </div>
               </CardContent>

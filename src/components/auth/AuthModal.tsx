@@ -83,7 +83,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-bold text-text-dark">
-            Welcome to iLovePDF
+            Welcome to PdfPage
           </DialogTitle>
         </DialogHeader>
 

@@ -1,6 +1,6 @@
-# Fusion Starter
+# PdfPage - The Ultimate PDF Toolkit
 
-The Fusion Starter is a modern, production-ready template for building full-stack React applications using react-router-dom in SPA mode.
+PdfPage is a modern, production-ready PDF processing platform built with React, featuring comprehensive PDF tools for merge, split, compress, convert, and more.
 
 ## Core Framework & Technologies
 

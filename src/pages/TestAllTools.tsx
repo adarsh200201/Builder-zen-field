@@ -488,14 +488,14 @@ const TestAllTools = () => {
 
             <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
               <h4 className="font-semibold text-yellow-800 mb-2">
-                🎯 Why MongoDB is Essential for Revenue
+                🎯 Why MongoDB is Essential for PdfPage Revenue
               </h4>
               <p className="text-sm text-yellow-700">
                 MongoDB stores every piece of data needed to convert free users
                 to premium subscribers. It tracks usage limits (forcing
                 upgrades), payment history (real revenue), and user behavior
-                (optimization opportunities). Without MongoDB, you can't enforce
-                limits, track payments, or analyze your business!
+                (optimization opportunities). Without MongoDB, PdfPage can't
+                enforce limits, track payments, or analyze the business!
               </p>
             </div>
           </CardContent>
