@@ -132,7 +132,7 @@ const Split = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <PromoBanner className="mb-8" />
 
-        <div className="text-center mb-8">
+        {/* Navigation */}
         <div className="flex items-center space-x-2 mb-8">
           <Link
             to="/"
