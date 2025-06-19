@@ -10,15 +10,22 @@ export function NetworkStatus() {
 
     setIsChecking(true);
     try {
+      // Create abort controller for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
       const response = await fetch(
         `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/health`,
         {
           method: "GET",
-          signal: AbortSignal.timeout(5000), // 5 second timeout
+          signal: controller.signal,
         },
       );
+
+      clearTimeout(timeoutId);
       setIsBackendOnline(response.ok);
     } catch (error) {
+      console.log("Backend status check failed:", error.message);
       setIsBackendOnline(false);
     } finally {
       setIsChecking(false);
