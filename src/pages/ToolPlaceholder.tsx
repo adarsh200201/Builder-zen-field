@@ -1,13 +1,22 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Construction, Clock } from "lucide-react";
+import {
+  ArrowLeft,
+  Construction,
+  Clock,
+  CheckCircle,
+  Star,
+} from "lucide-react";
 
 interface ToolPlaceholderProps {
   toolName: string;
   toolDescription: string;
   icon: React.ReactNode;
   comingSoon?: boolean;
+  workingTool?: boolean;
+  redirectTo?: string;
 }
 
 const ToolPlaceholder: React.FC<ToolPlaceholderProps> = ({
@@ -15,7 +24,21 @@ const ToolPlaceholder: React.FC<ToolPlaceholderProps> = ({
   toolDescription,
   icon,
   comingSoon = true,
+  workingTool = false,
+  redirectTo,
 }) => {
+  const navigate = useNavigate();
+
+  // Auto-redirect to working tool if available
+  useEffect(() => {
+    if (workingTool && redirectTo) {
+      const timer = setTimeout(() => {
+        navigate(redirectTo);
+      }, 2000); // 2 second delay to show the "Now Available" message
+
+      return () => clearTimeout(timer);
+    }
+  }, [workingTool, redirectTo, navigate]);
   return (
     <div className="min-h-screen bg-bg-light">
       <Header />
@@ -45,7 +68,24 @@ const ToolPlaceholder: React.FC<ToolPlaceholderProps> = ({
             {toolDescription}
           </p>
 
-          {comingSoon && (
+          {workingTool ? (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-8">
+              <div className="flex items-center justify-center mb-4">
+                <CheckCircle className="w-8 h-8 text-green-600" />
+              </div>
+              <h3 className="text-heading-small text-green-800 mb-2">
+                Now Available!
+              </h3>
+              <p className="text-body-medium text-green-700 mb-4">
+                This tool is now fully functional with real-time processing!
+                Redirecting you to the working tool...
+              </p>
+              <div className="flex items-center justify-center space-x-2 text-green-600">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
+                <span className="text-sm">Loading tool...</span>
+              </div>
+            </div>
+          ) : comingSoon ? (
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
               <div className="flex items-center justify-center mb-4">
                 <Clock className="w-8 h-8 text-yellow-600" />
@@ -58,14 +98,23 @@ const ToolPlaceholder: React.FC<ToolPlaceholderProps> = ({
                 soon as part of our comprehensive PDF toolkit.
               </p>
             </div>
-          )}
+          ) : null}
 
           <div className="flex items-center justify-center space-x-4">
-            <Link to="/">
-              <Button className="bg-brand-red hover:bg-red-600">
-                Try Other Tools
-              </Button>
-            </Link>
+            {workingTool && redirectTo ? (
+              <Link to={redirectTo}>
+                <Button className="bg-green-600 hover:bg-green-700">
+                  <Star className="w-4 h-4 mr-2" />
+                  Use Tool Now
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/">
+                <Button className="bg-brand-red hover:bg-red-600">
+                  Try Other Tools
+                </Button>
+              </Link>
+            )}
             <Link to="/merge">
               <Button variant="outline">Try Merge PDF</Button>
             </Link>
