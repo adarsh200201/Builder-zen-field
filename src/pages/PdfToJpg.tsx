@@ -337,136 +337,15 @@ const PdfToJpg = () => {
     }
   };
 
-  // Fallback conversion method that doesn't use PDF.js at all
+  // This method is now unused since pdf-lib is working as primary method
+  // Keeping it as final fallback just in case
   const fallbackPdfConversion = async (
     file: File,
     quality: number,
     dpi: number,
   ): Promise<string[]> => {
-    console.log("🔄 Using PDF.js-free fallback method...");
-
-    try {
-      // First try pdf-lib as it's more reliable
-      const { PDFDocument } = await import("pdf-lib");
-
-      const arrayBuffer = await file.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(arrayBuffer);
-      const pages = pdfDoc.getPages();
-
-      console.log(`📑 PDF-lib: Processing ${pages.length} pages`);
-
-      const images: string[] = [];
-
-      for (let i = 0; i < Math.min(pages.length, 10); i++) {
-        const page = pages[i];
-        const { width, height } = page.getSize();
-        const scale = dpi / 72;
-
-        // Create canvas with proper dimensions
-        const canvas = document.createElement("canvas");
-        const context = canvas.getContext("2d");
-
-        if (!context) continue;
-
-        canvas.width = Math.round(width * scale);
-        canvas.height = Math.round(height * scale);
-
-        // White background
-        context.fillStyle = "#ffffff";
-        context.fillRect(0, 0, canvas.width, canvas.height);
-
-        // Add realistic page styling
-        context.strokeStyle = "#dddddd";
-        context.lineWidth = 1;
-        context.strokeRect(0, 0, canvas.width, canvas.height);
-
-        // Add drop shadow effect
-        context.fillStyle = "rgba(0,0,0,0.1)";
-        context.fillRect(4, 4, canvas.width, canvas.height);
-        context.fillStyle = "#ffffff";
-        context.fillRect(0, 0, canvas.width, canvas.height);
-
-        // Try to extract text content if available
-        try {
-          // Get any available text from the page
-          const text = (await page.getTextContent?.()) || "PDF Content";
-
-          context.fillStyle = "#333333";
-          context.font = `${Math.round(14 * scale)}px Arial`;
-          context.textAlign = "left";
-
-          // Simulate document content
-          const lines = [
-            "PDF Document Page",
-            `Page ${i + 1} of ${pages.length}`,
-            "",
-            "This page contains PDF content that has been",
-            "successfully processed and converted to JPG format.",
-            "",
-            `Original dimensions: ${Math.round(width)} × ${Math.round(height)} points`,
-            `Output resolution: ${dpi} DPI`,
-            `Quality: ${quality}%`,
-            "",
-            `Source file: ${file.name}`,
-            `File size: ${(file.size / 1024 / 1024).toFixed(2)} MB`,
-            "",
-            "✓ PDF structure verified",
-            "✓ Content extracted successfully",
-            "✓ Image conversion completed",
-          ];
-
-          let yPos = 40 * scale;
-          const lineHeight = 20 * scale;
-
-          lines.forEach((line, index) => {
-            if (line === "") {
-              yPos += lineHeight / 2;
-              return;
-            }
-
-            if (index === 0) {
-              context.font = `bold ${Math.round(16 * scale)}px Arial`;
-              context.fillStyle = "#000000";
-            } else if (line.startsWith("✓")) {
-              context.fillStyle = "#28a745";
-              context.font = `${Math.round(12 * scale)}px Arial`;
-            } else {
-              context.fillStyle = "#333333";
-              context.font = `${Math.round(12 * scale)}px Arial`;
-            }
-
-            context.fillText(line, 30 * scale, yPos);
-            yPos += lineHeight;
-          });
-        } catch (textError) {
-          console.log("No text content available, using basic layout");
-        }
-
-        // Add page number at bottom
-        context.fillStyle = "#999999";
-        context.font = `${Math.round(10 * scale)}px Arial`;
-        context.textAlign = "center";
-        context.fillText(
-          `Page ${i + 1}`,
-          canvas.width / 2,
-          canvas.height - 20 * scale,
-        );
-
-        const imageDataUrl = canvas.toDataURL("image/jpeg", quality / 100);
-        images.push(imageDataUrl);
-      }
-
-      console.log(
-        `✅ PDF-lib conversion completed: ${images.length} pages processed`,
-      );
-      return images;
-    } catch (pdfLibError) {
-      console.error("❌ PDF-lib also failed:", pdfLibError);
-
-      // Final fallback: create informational images
-      console.log("🔄 Creating informational placeholder images...");
-      return await createPlaceholderImages(file, quality, dpi);
-    }
+    console.log("🔄 Using final fallback method...");
+    return await createPlaceholderImages(file, quality, dpi);
   };
 
   // Create informational placeholder images when all PDF processing fails
