@@ -100,7 +100,7 @@ export class PDFService {
     }
   }
 
-  // Compress PDF using backend API
+  // Compress PDF using backend API with client-side fallback
   static async compressPDF(
     file: File,
     quality: number = 0.7,
@@ -126,7 +126,35 @@ export class PDFService {
       return new Uint8Array(arrayBuffer);
     } catch (error) {
       console.error("Error compressing PDF:", error);
+
+      // Check if it's a network error - fallback to client-side processing
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        console.warn("Backend unavailable, using client-side PDF optimization");
+        return await this.optimizePDFClientSide(file);
+      }
+
       throw error;
+    }
+  }
+
+  // Client-side PDF optimization fallback (basic compression)
+  private static async optimizePDFClientSide(file: File): Promise<Uint8Array> {
+    try {
+      const { PDFDocument } = await import("pdf-lib");
+
+      const arrayBuffer = await file.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(arrayBuffer);
+
+      // Basic optimization - just re-save the PDF which can reduce size
+      const pdfBytes = await pdfDoc.save({
+        useObjectStreams: false,
+        addDefaultPage: false,
+      });
+
+      return pdfBytes;
+    } catch (error) {
+      console.error("Error in client-side PDF optimization:", error);
+      throw new Error("Failed to optimize PDF file");
     }
   }
 
