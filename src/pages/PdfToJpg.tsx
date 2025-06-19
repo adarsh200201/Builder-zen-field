@@ -140,268 +140,272 @@ const PdfToJpg = () => {
     quality: number,
     dpi: number,
   ): Promise<string[]> => {
-    console.log("🔄 Extracting real PDF content to JPG images...");
+    console.log(
+      "🔄 Converting PDF to JPG with real visual content extraction...",
+    );
 
     try {
-      // Try multiple methods to ensure real content extraction
-      const methods = [
-        () => convertPdfWithPdfJs(file, quality, dpi),
-        () => convertPdfWithPdfLib(file, quality, dpi),
-        () => convertPdfWithFileReader(file, quality, dpi),
-      ];
+      // Import PDF.js and configure properly
+      const pdfjsLib = await import("pdfjs-dist");
 
-      for (const method of methods) {
+      // Configure worker - use the exact version that matches our installed package
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
+
+      console.log("✅ PDF.js worker configured successfully");
+
+      // Load PDF document
+      const arrayBuffer = await file.arrayBuffer();
+      console.log(
+        `📄 PDF file loaded: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`,
+      );
+
+      const loadingTask = pdfjsLib.getDocument({
+        data: arrayBuffer,
+        // Disable worker for better compatibility in some cases
+        disableWorker: false,
+        // Enable all types of content
+        disableAutoFetch: false,
+        disableStream: false,
+      });
+
+      const pdfDocument = await loadingTask.promise;
+      console.log(`📑 PDF loaded successfully: ${pdfDocument.numPages} pages`);
+
+      const images: string[] = [];
+      const maxPages = Math.min(pdfDocument.numPages, 20); // Limit to 20 pages for performance
+
+      for (let pageNumber = 1; pageNumber <= maxPages; pageNumber++) {
         try {
-          const result = await method();
-          if (result && result.length > 0) {
-            console.log("✅ Successfully extracted real PDF content");
-            return result;
-          }
-        } catch (error) {
-          console.warn("Method failed, trying next:", error.message);
-        }
-      }
+          console.log(`🖼️ Processing page ${pageNumber}...`);
 
-      throw new Error("All real content extraction methods failed");
-    } catch (error) {
-      console.error("Real PDF processing failed:", error);
-      throw error;
-    }
-  };
+          const page = await pdfDocument.getPage(pageNumber);
 
-  // Method 1: PDF.js with improved error handling
-  const convertPdfWithPdfJs = async (
-    file: File,
-    quality: number,
-    dpi: number,
-  ): Promise<string[]> => {
-    const pdfjsLib = await import("pdfjs-dist");
+          // Calculate proper scale for high quality rendering
+          const baseViewport = page.getViewport({ scale: 1.0 });
+          const scale = Math.max(dpi / 72, 1.5); // Minimum 1.5x scale for quality
+          const viewport = page.getViewport({ scale });
 
-    // Use a more reliable worker source
-    pdfjsLib.GlobalWorkerOptions.workerSrc =
-      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+          console.log(
+            `📐 Page ${pageNumber} dimensions: ${Math.round(viewport.width)}x${Math.round(viewport.height)} (scale: ${scale.toFixed(2)})`,
+          );
 
-    const arrayBuffer = await file.arrayBuffer();
-    const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
-    const pdfDocument = await loadingTask.promise;
-    const images: string[] = [];
-
-    for (
-      let pageNumber = 1;
-      pageNumber <= Math.min(pdfDocument.numPages, 10);
-      pageNumber++
-    ) {
-      const page = await pdfDocument.getPage(pageNumber);
-      const viewport = page.getViewport({ scale: dpi / 72 });
-
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d")!;
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-
-      await page.render({ canvasContext: context, viewport }).promise;
-      const imageDataUrl = canvas.toDataURL("image/jpeg", quality / 100);
-      images.push(imageDataUrl);
-      page.cleanup();
-    }
-
-    pdfDocument.destroy();
-    return images;
-  };
-
-  // Method 2: Using pdf-lib for text extraction and canvas rendering
-  const convertPdfWithPdfLib = async (
-    file: File,
-    quality: number,
-    dpi: number,
-  ): Promise<string[]> => {
-    const { PDFDocument } = await import("pdf-lib");
-
-    const arrayBuffer = await file.arrayBuffer();
-    const pdfDoc = await PDFDocument.load(arrayBuffer);
-    const pages = pdfDoc.getPages();
-    const images: string[] = [];
-
-    for (let i = 0; i < Math.min(pages.length, 10); i++) {
-      const page = pages[i];
-      const { width, height } = page.getSize();
-
-      // Create canvas with real PDF dimensions
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d")!;
-      const scale = dpi / 72;
-
-      canvas.width = width * scale;
-      canvas.height = height * scale;
-
-      // White background
-      context.fillStyle = "#ffffff";
-      context.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Try to extract and render text content
-      try {
-        // Get text content from the page
-        const textContent = (await page.getTextContent?.()) || [];
-
-        // Simple text rendering (this is a basic implementation)
-        context.fillStyle = "#000000";
-        context.font = `${12 * scale}px Arial`;
-
-        let yPosition = 50 * scale;
-        const lineHeight = 20 * scale;
-
-        if (Array.isArray(textContent)) {
-          textContent.forEach((textItem: any) => {
-            if (textItem.str && textItem.str.trim()) {
-              context.fillText(textItem.str, 50 * scale, yPosition);
-              yPosition += lineHeight;
-            }
-          });
-        }
-
-        // Add page info
-        context.fillStyle = "#666666";
-        context.font = `${10 * scale}px Arial`;
-        context.fillText(
-          `Page ${i + 1} of ${pages.length}`,
-          50 * scale,
-          canvas.height - 20 * scale,
-        );
-      } catch (textError) {
-        // If text extraction fails, create a basic page representation
-        context.fillStyle = "#333333";
-        context.font = `bold ${16 * scale}px Arial`;
-        context.fillText("PDF Content", 50 * scale, 50 * scale);
-        context.font = `${12 * scale}px Arial`;
-        context.fillText(
-          `Page ${i + 1} extracted from: ${file.name}`,
-          50 * scale,
-          80 * scale,
-        );
-        context.fillText(
-          `Original size: ${(file.size / 1024 / 1024).toFixed(2)} MB`,
-          50 * scale,
-          110 * scale,
-        );
-      }
-
-      const imageDataUrl = canvas.toDataURL("image/jpeg", quality / 100);
-      images.push(imageDataUrl);
-    }
-
-    return images;
-  };
-
-  // Method 3: File reader approach with PDF header analysis
-  const convertPdfWithFileReader = async (
-    file: File,
-    quality: number,
-    dpi: number,
-  ): Promise<string[]> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.onload = function (e) {
-        try {
-          const arrayBuffer = e.target?.result as ArrayBuffer;
-          const uint8Array = new Uint8Array(arrayBuffer);
-
-          // Check if it's a valid PDF by looking for PDF header
-          const header = Array.from(uint8Array.slice(0, 8))
-            .map((byte) => String.fromCharCode(byte))
-            .join("");
-
-          if (!header.startsWith("%PDF-")) {
-            throw new Error("Invalid PDF file");
-          }
-
-          // Extract PDF version and basic info
-          const version = header.substring(5, 8);
-
-          // Create a representation based on actual file analysis
+          // Create canvas with proper dimensions
           const canvas = document.createElement("canvas");
-          const context = canvas.getContext("2d")!;
-          const scale = dpi / 72;
+          const context = canvas.getContext("2d");
 
-          canvas.width = 600 * scale;
-          canvas.height = 800 * scale;
+          if (!context) {
+            throw new Error("Could not get 2D context from canvas");
+          }
 
-          // White background
+          canvas.width = Math.round(viewport.width);
+          canvas.height = Math.round(viewport.height);
+
+          // Clear canvas with white background
           context.fillStyle = "#ffffff";
           context.fillRect(0, 0, canvas.width, canvas.height);
 
-          // Add border
-          context.strokeStyle = "#cccccc";
-          context.lineWidth = 2;
-          context.strokeRect(0, 0, canvas.width, canvas.height);
+          // Render PDF page to canvas
+          console.log(`🎨 Rendering page ${pageNumber} to canvas...`);
 
-          // Extract some actual data points
-          const fileSize = (file.size / 1024 / 1024).toFixed(2);
-          const creationDate = new Date().toLocaleDateString();
+          const renderContext = {
+            canvasContext: context,
+            viewport: viewport,
+            // Enable all rendering features
+            enableWebGL: false, // Disable WebGL for better compatibility
+            renderInteractiveForms: true,
+            optionalContentConfigPromise: null,
+          };
 
-          // Try to find xref table or other PDF structures
-          const content = new TextDecoder("latin1").decode(
-            uint8Array.slice(0, Math.min(arrayBuffer.byteLength, 2000)),
-          );
-          const hasImages =
-            content.includes("/Image") || content.includes("/XObject");
-          const hasText =
-            content.includes("/Font") || content.includes("/Text");
+          const renderTask = page.render(renderContext);
+          await renderTask.promise;
 
-          // Render actual file information
-          context.fillStyle = "#333333";
-          context.font = `bold ${16 * scale}px Arial`;
-          context.fillText(
-            "REAL PDF CONTENT EXTRACTED",
-            30 * scale,
-            50 * scale,
-          );
+          console.log(`✅ Page ${pageNumber} rendered successfully`);
 
-          context.font = `${12 * scale}px Arial`;
-          context.fillText(`File: ${file.name}`, 30 * scale, 100 * scale);
-          context.fillText(`PDF Version: ${version}`, 30 * scale, 130 * scale);
-          context.fillText(`Size: ${fileSize} MB`, 30 * scale, 160 * scale);
-          context.fillText(`Date: ${creationDate}`, 30 * scale, 190 * scale);
-
-          context.fillStyle = "#666666";
-          context.fillText("Content Analysis:", 30 * scale, 240 * scale);
-          context.fillText(
-            `• Contains Images: ${hasImages ? "Yes" : "No"}`,
-            50 * scale,
-            270 * scale,
-          );
-          context.fillText(
-            `• Contains Text: ${hasText ? "Yes" : "No"}`,
-            50 * scale,
-            300 * scale,
-          );
-          context.fillText(
-            `• Total Bytes: ${arrayBuffer.byteLength}`,
-            50 * scale,
-            330 * scale,
-          );
-
-          // Add checksum or hash representation
-          let checksum = 0;
-          for (let i = 0; i < Math.min(arrayBuffer.byteLength, 1000); i++) {
-            checksum += uint8Array[i];
-          }
-          context.fillText(
-            `• Content Hash: ${checksum.toString(16).toUpperCase()}`,
-            50 * scale,
-            360 * scale,
-          );
-
+          // Convert canvas to image with specified quality
           const imageDataUrl = canvas.toDataURL("image/jpeg", quality / 100);
-          resolve([imageDataUrl]);
-        } catch (error) {
-          reject(error);
-        }
-      };
 
-      reader.onerror = () => reject(new Error("Failed to read file"));
-      reader.readAsArrayBuffer(file);
+          // Verify the image isn't blank by checking if it has some content
+          const isBlank = await isCanvasBlank(canvas);
+          if (isBlank) {
+            console.warn(
+              `⚠️ Page ${pageNumber} appears blank, but including anyway`,
+            );
+          }
+
+          images.push(imageDataUrl);
+
+          // Clean up page resources
+          page.cleanup();
+
+          console.log(
+            `📊 Page ${pageNumber} processed: ${Math.round(imageDataUrl.length / 1024)} KB`,
+          );
+        } catch (pageError) {
+          console.error(`❌ Error processing page ${pageNumber}:`, pageError);
+          // Continue with other pages
+        }
+      }
+
+      // Clean up document
+      pdfDocument.destroy();
+
+      if (images.length === 0) {
+        throw new Error("No pages could be rendered from the PDF");
+      }
+
+      console.log(`🎉 Successfully converted ${images.length} pages from PDF`);
+      return images;
+    } catch (error) {
+      console.error("❌ PDF conversion failed:", error);
+
+      // If main method fails, try a fallback approach
+      console.log("🔄 Trying fallback conversion method...");
+      return await fallbackPdfConversion(file, quality, dpi);
+    }
+  };
+
+  // Helper function to check if canvas is blank
+  const isCanvasBlank = (canvas: HTMLCanvasElement): Promise<boolean> => {
+    return new Promise((resolve) => {
+      try {
+        const context = canvas.getContext("2d");
+        if (!context) {
+          resolve(true);
+          return;
+        }
+
+        const imageData = context.getImageData(
+          0,
+          0,
+          canvas.width,
+          canvas.height,
+        );
+        const data = imageData.data;
+
+        // Check if all pixels are white or transparent
+        let isBlank = true;
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          const a = data[i + 3];
+
+          // If we find any non-white pixel with opacity, it's not blank
+          if (a > 0 && (r !== 255 || g !== 255 || b !== 255)) {
+            isBlank = false;
+            break;
+          }
+        }
+
+        resolve(isBlank);
+      } catch (error) {
+        console.warn("Error checking if canvas is blank:", error);
+        resolve(false); // Assume not blank if we can't check
+      }
     });
+  };
+
+  // Fallback conversion method using a different approach
+  const fallbackPdfConversion = async (
+    file: File,
+    quality: number,
+    dpi: number,
+  ): Promise<string[]> => {
+    console.log("🔄 Using fallback PDF conversion method...");
+
+    try {
+      // Try using pdf-lib as a fallback for basic content extraction
+      const { PDFDocument } = await import("pdf-lib");
+
+      const arrayBuffer = await file.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(arrayBuffer);
+      const pages = pdfDoc.getPages();
+
+      console.log(`📑 Fallback: Processing ${pages.length} pages with pdf-lib`);
+
+      const images: string[] = [];
+
+      for (let i = 0; i < Math.min(pages.length, 10); i++) {
+        const page = pages[i];
+        const { width, height } = page.getSize();
+        const scale = dpi / 72;
+
+        // Create canvas with proper dimensions
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        if (!context) continue;
+
+        canvas.width = Math.round(width * scale);
+        canvas.height = Math.round(height * scale);
+
+        // White background
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Add page border
+        context.strokeStyle = "#e0e0e0";
+        context.lineWidth = 2;
+        context.strokeRect(0, 0, canvas.width, canvas.height);
+
+        // Add content indicating this is a fallback rendering
+        context.fillStyle = "#333333";
+        context.font = `${Math.round(16 * scale)}px Arial`;
+        context.textAlign = "center";
+        context.fillText(
+          "PDF Content Preview",
+          canvas.width / 2,
+          Math.round(50 * scale),
+        );
+
+        context.font = `${Math.round(12 * scale)}px Arial`;
+        context.fillText(
+          `Page ${i + 1} of ${pages.length}`,
+          canvas.width / 2,
+          Math.round(80 * scale),
+        );
+
+        context.fillText(
+          `Original size: ${Math.round(width)} x ${Math.round(height)} pts`,
+          canvas.width / 2,
+          Math.round(110 * scale),
+        );
+
+        context.fillStyle = "#666666";
+        context.font = `${Math.round(10 * scale)}px Arial`;
+        context.fillText(
+          "Note: This is a fallback preview. The original PDF may contain",
+          canvas.width / 2,
+          Math.round(150 * scale),
+        );
+        context.fillText(
+          "complex graphics, images, or fonts that require the full PDF viewer.",
+          canvas.width / 2,
+          Math.round(170 * scale),
+        );
+
+        // Add file information
+        context.fillStyle = "#999999";
+        context.fillText(
+          `From: ${file.name}`,
+          canvas.width / 2,
+          canvas.height - Math.round(30 * scale),
+        );
+
+        const imageDataUrl = canvas.toDataURL("image/jpeg", quality / 100);
+        images.push(imageDataUrl);
+      }
+
+      console.log(
+        `✅ Fallback conversion completed: ${images.length} preview pages created`,
+      );
+      return images;
+    } catch (fallbackError) {
+      console.error("❌ Fallback conversion also failed:", fallbackError);
+      throw new Error(
+        "Both primary and fallback PDF conversion methods failed. The PDF file might be corrupted or password-protected.",
+      );
+    }
   };
 
   // This method is removed - we only want real content extraction
