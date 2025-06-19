@@ -39,7 +39,7 @@ export class PDFService {
     return headers;
   }
 
-  // Merge PDFs using backend API
+  // Merge PDFs using backend API with client-side fallback
   static async mergePDFs(files: ProcessedFile[]): Promise<Uint8Array> {
     try {
       const formData = new FormData();
@@ -65,7 +65,38 @@ export class PDFService {
       return new Uint8Array(arrayBuffer);
     } catch (error) {
       console.error("Error merging PDFs:", error);
+
+      // Check if it's a network error - fallback to client-side processing
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        console.warn("Backend unavailable, using client-side PDF merging");
+        return await this.mergePDFsClientSide(files);
+      }
+
       throw error;
+    }
+  }
+
+  // Client-side PDF merging fallback
+  private static async mergePDFsClientSide(
+    files: ProcessedFile[],
+  ): Promise<Uint8Array> {
+    try {
+      const { PDFDocument } = await import("pdf-lib");
+
+      const mergedPdf = await PDFDocument.create();
+
+      for (const fileData of files) {
+        const arrayBuffer = await fileData.file.arrayBuffer();
+        const pdf = await PDFDocument.load(arrayBuffer);
+        const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+        pages.forEach((page) => mergedPdf.addPage(page));
+      }
+
+      const pdfBytes = await mergedPdf.save();
+      return pdfBytes;
+    } catch (error) {
+      console.error("Error in client-side PDF merging:", error);
+      throw new Error("Failed to merge PDF files");
     }
   }
 
