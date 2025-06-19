@@ -154,12 +154,11 @@ const PdfToJpg = () => {
     // Dynamic import to avoid build issues
     const pdfjsLib = await import("pdfjs-dist");
 
-    // Configure PDF.js worker
+    // Configure PDF.js worker - use CDN version that's more reliable
     if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-        "pdfjs-dist/build/pdf.worker.min.js",
-        import.meta.url,
-      ).toString();
+      // Use the same version as the main library
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
     }
 
     const arrayBuffer = await file.arrayBuffer();
