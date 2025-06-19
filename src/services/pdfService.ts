@@ -1,5 +1,3 @@
-import { PDFDocument } from "pdf-lib";
-
 export interface ProcessedFile {
   id: string;
   file: File;
@@ -8,81 +6,131 @@ export interface ProcessedFile {
 }
 
 export class PDFService {
+  private static API_URL =
+    import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+  // Get authentication token
+  private static getToken(): string | null {
+    return (
+      document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("token="))
+        ?.split("=")[1] || null
+    );
+  }
+
+  // Get session ID for anonymous users
+  private static getSessionId(): string {
+    let sessionId = localStorage.getItem("sessionId");
+    if (!sessionId) {
+      sessionId = Math.random().toString(36).substr(2, 9);
+      localStorage.setItem("sessionId", sessionId);
+    }
+    return sessionId;
+  }
+
+  // Create headers for API requests
+  private static createHeaders(): HeadersInit {
+    const headers: HeadersInit = {};
+    const token = this.getToken();
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+    return headers;
+  }
+
+  // Merge PDFs using backend API
   static async mergePDFs(files: ProcessedFile[]): Promise<Uint8Array> {
     try {
-      const mergedPdf = await PDFDocument.create();
+      const formData = new FormData();
 
-      for (const fileData of files) {
-        const arrayBuffer = await fileData.file.arrayBuffer();
-        const pdf = await PDFDocument.load(arrayBuffer);
-        const copiedPages = await mergedPdf.copyPages(
-          pdf,
-          pdf.getPageIndices(),
-        );
-        copiedPages.forEach((page) => mergedPdf.addPage(page));
+      files.forEach((fileData) => {
+        formData.append("files", fileData.file);
+      });
+
+      formData.append("sessionId", this.getSessionId());
+
+      const response = await fetch(`${this.API_URL}/pdf/merge`, {
+        method: "POST",
+        headers: this.createHeaders(),
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to merge PDF files");
       }
 
-      const pdfBytes = await mergedPdf.save();
-      return pdfBytes;
+      const arrayBuffer = await response.arrayBuffer();
+      return new Uint8Array(arrayBuffer);
     } catch (error) {
       console.error("Error merging PDFs:", error);
-      throw new Error("Failed to merge PDF files");
+      throw error;
     }
   }
 
+  // Compress PDF using backend API
   static async compressPDF(
     file: File,
     quality: number = 0.7,
   ): Promise<Uint8Array> {
     try {
-      const arrayBuffer = await file.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(arrayBuffer);
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("quality", quality.toString());
+      formData.append("sessionId", this.getSessionId());
 
-      // Basic compression by removing metadata and optimizing
-      pdfDoc.setTitle("");
-      pdfDoc.setAuthor("");
-      pdfDoc.setSubject("");
-      pdfDoc.setKeywords([]);
-      pdfDoc.setProducer("iLovePDF");
-      pdfDoc.setCreator("iLovePDF");
-
-      const pdfBytes = await pdfDoc.save({
-        useObjectStreams: false,
-        addDefaultPage: false,
+      const response = await fetch(`${this.API_URL}/pdf/compress`, {
+        method: "POST",
+        headers: this.createHeaders(),
+        body: formData,
       });
 
-      return pdfBytes;
-    } catch (error) {
-      console.error("Error compressing PDF:", error);
-      throw new Error("Failed to compress PDF file");
-    }
-  }
-
-  static async splitPDF(file: File): Promise<Uint8Array[]> {
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(arrayBuffer);
-      const pageCount = pdfDoc.getPageCount();
-      const splitPdfs: Uint8Array[] = [];
-
-      for (let i = 0; i < pageCount; i++) {
-        const newPdf = await PDFDocument.create();
-        const [copiedPage] = await newPdf.copyPages(pdfDoc, [i]);
-        newPdf.addPage(copiedPage);
-
-        const pdfBytes = await newPdf.save();
-        splitPdfs.push(pdfBytes);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to compress PDF file");
       }
 
-      return splitPdfs;
+      const arrayBuffer = await response.arrayBuffer();
+      return new Uint8Array(arrayBuffer);
     } catch (error) {
-      console.error("Error splitting PDF:", error);
-      throw new Error("Failed to split PDF file");
+      console.error("Error compressing PDF:", error);
+      throw error;
     }
   }
 
+  // Split PDF using backend API
+  static async splitPDF(file: File): Promise<Uint8Array[]> {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("sessionId", this.getSessionId());
+
+      const response = await fetch(`${this.API_URL}/pdf/split`, {
+        method: "POST",
+        headers: this.createHeaders(),
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to split PDF file");
+      }
+
+      // For now, return single page (backend returns first page)
+      const arrayBuffer = await response.arrayBuffer();
+      return [new Uint8Array(arrayBuffer)];
+    } catch (error) {
+      console.error("Error splitting PDF:", error);
+      throw error;
+    }
+  }
+
+  // Rotate PDF (client-side for now, can be moved to backend)
   static async rotatePDF(file: File, rotation: number): Promise<Uint8Array> {
     try {
+      const { PDFDocument } = await import("pdf-lib");
+
       const arrayBuffer = await file.arrayBuffer();
       const pdfDoc = await PDFDocument.load(arrayBuffer);
       const pages = pdfDoc.getPages();
@@ -99,6 +147,68 @@ export class PDFService {
     }
   }
 
+  // Check usage limits
+  static async checkUsageLimit(): Promise<{
+    canUpload: boolean;
+    remainingUploads: number | string;
+    message: string;
+    isPremium: boolean;
+  }> {
+    try {
+      const sessionId = this.getSessionId();
+      const response = await fetch(
+        `${this.API_URL}/usage/check-limit?sessionId=${sessionId}`,
+        {
+          headers: this.createHeaders(),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to check usage limit");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error checking usage limit:", error);
+      // Return default for offline/error scenarios
+      return {
+        canUpload: true,
+        remainingUploads: 3,
+        message: "Unable to check limits",
+        isPremium: false,
+      };
+    }
+  }
+
+  // Track usage
+  static async trackUsage(
+    toolUsed: string,
+    fileCount: number,
+    totalFileSize: number,
+  ): Promise<boolean> {
+    try {
+      const response = await fetch(`${this.API_URL}/usage/track`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...this.createHeaders(),
+        },
+        body: JSON.stringify({
+          toolUsed,
+          fileCount,
+          totalFileSize,
+          sessionId: this.getSessionId(),
+        }),
+      });
+
+      return response.ok;
+    } catch (error) {
+      console.error("Error tracking usage:", error);
+      return false;
+    }
+  }
+
+  // Download file helper
   static downloadFile(pdfBytes: Uint8Array, filename: string): void {
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
@@ -109,33 +219,49 @@ export class PDFService {
     URL.revokeObjectURL(url);
   }
 
+  // Upload to Cloudinary (Premium feature)
   static async uploadToCloudinary(
     pdfBytes: Uint8Array,
     filename: string,
   ): Promise<string> {
     try {
-      const formData = new FormData();
       const blob = new Blob([pdfBytes], { type: "application/pdf" });
+      const formData = new FormData();
       formData.append("file", blob, filename);
-      formData.append("upload_preset", "pdf_uploads"); // You need to create this in Cloudinary
 
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/upload`,
-        {
-          method: "POST",
-          body: formData,
-        },
-      );
+      const response = await fetch(`${this.API_URL}/upload/cloudinary`, {
+        method: "POST",
+        headers: this.createHeaders(),
+        body: formData,
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to upload to Cloudinary");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to upload to cloud");
       }
 
       const data = await response.json();
-      return data.secure_url;
+      return data.file.url;
     } catch (error) {
       console.error("Error uploading to Cloudinary:", error);
       throw error;
+    }
+  }
+
+  // Get available tools
+  static async getAvailableTools(): Promise<any[]> {
+    try {
+      const response = await fetch(`${this.API_URL}/pdf/tools`);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch tools");
+      }
+
+      const data = await response.json();
+      return data.tools;
+    } catch (error) {
+      console.error("Error fetching tools:", error);
+      return [];
     }
   }
 }
