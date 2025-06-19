@@ -37,6 +37,7 @@ app.use(
       process.env.FRONTEND_URL,
       "http://localhost:3000",
       "http://localhost:5173",
+      "http://localhost:8080", // Frontend dev server
       "https://your-domain.com", // Add your production domain
     ],
     credentials: true,
