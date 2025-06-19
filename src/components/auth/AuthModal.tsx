@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { Loader2, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { PromoBanner } from "@/components/ui/promo-banner";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -80,12 +81,14 @@ const AuthModal: React.FC<AuthModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-center text-2xl font-bold text-text-dark">
+          <DialogTitle className="text-center text-2xl font-bold">
             Welcome to PdfPage
           </DialogTitle>
         </DialogHeader>
+
+        <PromoBanner className="mb-4" closeable={false} />
 
         <Tabs
           value={activeTab}
