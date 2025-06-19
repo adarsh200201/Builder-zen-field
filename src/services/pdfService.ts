@@ -277,32 +277,6 @@ export class PDFService {
       message: "🚀 3 Months Free Access - All tools unlocked!",
       isPremium: true, // Treat as premium during free period
     };
-
-    try {
-      const sessionId = this.getSessionId();
-      const response = await fetch(
-        `${this.API_URL}/usage/check-limit?sessionId=${sessionId}`,
-        {
-          headers: this.createHeaders(),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to check usage limit");
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error("Error checking usage limit:", error);
-
-      // Fallback to free promotion mode
-      return {
-        canUpload: true,
-        remainingUploads: "unlimited",
-        message: "🚀 3 Months Free Access - All tools unlocked!",
-        isPremium: true,
-      };
-    }
   }
 
   // Track usage
