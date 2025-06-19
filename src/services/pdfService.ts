@@ -12,18 +12,16 @@ export class PDFService {
   // Simple network check to avoid fetch errors
   private static async isBackendAvailable(): Promise<boolean> {
     try {
-      // Quick ping with minimal timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => {
-        controller.abort();
-      }, 2000);
+      // Simple fetch without AbortController to avoid signal issues
+      const response = await Promise.race([
+        fetch(`${this.API_URL}/health`, {
+          method: "HEAD", // Use HEAD for minimal data transfer
+        }),
+        new Promise<Response>((_, reject) =>
+          setTimeout(() => reject(new Error("Timeout")), 2000),
+        ),
+      ]);
 
-      const response = await fetch(`${this.API_URL}/health`, {
-        method: "HEAD", // Use HEAD for minimal data transfer
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
       return response.ok;
     } catch (error) {
       // Log for debugging but don't throw
