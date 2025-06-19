@@ -293,10 +293,10 @@ const WordToPdf = () => {
             {files.length === 0 && (
               <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
                 <FileUpload
-                  onFilesSelected={handleFileUpload}
-                  acceptedTypes={[".doc", ".docx"]}
-                  maxFiles={10}
-                  maxSize={50 * 1024 * 1024} // 50MB
+                  onFilesSelect={handleFileUpload}
+                  accept=".doc,.docx"
+                  multiple={true}
+                  maxSize={50}
                 />
               </div>
             )}
