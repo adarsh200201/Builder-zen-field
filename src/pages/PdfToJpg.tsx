@@ -298,9 +298,15 @@ const PdfToJpg = () => {
     } catch (error) {
       console.error("❌ PDF conversion failed:", error);
 
-      // If main method fails, try a fallback approach
-      console.log("🔄 Trying fallback conversion method...");
-      return await fallbackPdfConversion(file, quality, dpi);
+      // If main method fails, try a completely different approach
+      console.log("🔄 Trying workerless fallback conversion method...");
+      try {
+        return await workerlessPdfConversion(file, quality, dpi);
+      } catch (fallbackError) {
+        console.error("❌ Workerless conversion also failed:", fallbackError);
+        console.log("🔄 Using final fallback method...");
+        return await fallbackPdfConversion(file, quality, dpi);
+      }
     }
   };
 
