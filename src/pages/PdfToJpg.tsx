@@ -316,17 +316,21 @@ const PdfToJpg = () => {
           iconY + iconSize / 2 + 4 * scale,
         );
 
-        // Add title text
-        context.fillStyle = "#374151";
+        // Add text
+        context.fillStyle = "#495057";
         context.font = `bold ${16 * scale}px Arial`;
         context.textAlign = "left";
         const titleY = margin + 25 * scale;
-        context.fillText("PDF Document", iconX + iconSize + 15 * scale, titleY);
+        context.fillText(
+          "PDF Document (Preview)",
+          iconX + iconSize + 15 * scale,
+          titleY,
+        );
 
         context.font = `${12 * scale}px Arial`;
         context.fillStyle = "#6b7280";
         context.fillText(
-          `Page ${pageNum} of ${estimatedPages}`,
+          `Page ${pageNum} of ${estimatedPages} (Fallback Mode)`,
           iconX + iconSize + 15 * scale,
           titleY + 20 * scale,
         );
