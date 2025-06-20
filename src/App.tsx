@@ -28,6 +28,12 @@ import Pricing from "./pages/Pricing";
 import Dashboard from "./pages/Dashboard";
 import Rotate from "./pages/Rotate";
 import TestAllTools from "./pages/TestAllTools";
+import About from "./pages/About";
+import Blog from "./pages/Blog";
+import Press from "./pages/Press";
+import Careers from "./pages/Careers";
+import Contact from "./pages/Contact";
+import Affiliate from "./pages/Affiliate";
 import {
   PowerPointToPdf,
   ExcelToPdf,
@@ -112,6 +118,12 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/test-all-tools" element={<TestAllTools />} />
             <Route path="/tools" element={<Index />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/press" element={<Press />} />
+            <Route path="/careers" element={<Careers />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/affiliate" element={<Affiliate />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
