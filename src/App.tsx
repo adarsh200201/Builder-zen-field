@@ -23,6 +23,7 @@ import CropPdf from "./pages/CropPdf";
 import OrganizePdf from "./pages/OrganizePdf";
 import PageNumbers from "./pages/PageNumbers";
 import EditPdf from "./pages/EditPdf";
+import SignPdf from "./pages/SignPdf";
 import Pricing from "./pages/Pricing";
 import Dashboard from "./pages/Dashboard";
 import Rotate from "./pages/Rotate";
@@ -30,7 +31,6 @@ import TestAllTools from "./pages/TestAllTools";
 import {
   PowerPointToPdf,
   ExcelToPdf,
-  SignPdf,
   RotatePdf,
   HtmlToPdf,
   PdfToPdfA,
@@ -53,6 +53,7 @@ import {
   CropPdf as CropPdfPlaceholder,
   PageNumbers as PageNumbersPlaceholder,
   EditPdf as EditPdfPlaceholder,
+  SignPdf as SignPdfPlaceholder,
 } from "./pages/AllTools";
 import NotFound from "./pages/NotFound";
 
