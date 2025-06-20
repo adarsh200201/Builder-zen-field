@@ -9,6 +9,9 @@ interface FileUploadProps {
   multiple?: boolean;
   maxSize?: number; // in MB
   className?: string;
+  allowedTypes?: string[]; // e.g., ["pdf", "image"]
+  uploadText?: string;
+  supportText?: string;
 }
 
 interface UploadedFile {
@@ -23,17 +26,39 @@ const FileUpload: React.FC<FileUploadProps> = ({
   multiple = true,
   maxSize = 10,
   className,
+  allowedTypes = ["pdf"],
+  uploadText = "Select PDF files or drop PDF files here",
+  supportText = "Supports PDF format",
 }) => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
 
   const validateFile = (file: File): string | null => {
-    if (
-      !file.type.includes("pdf") &&
-      !file.name.toLowerCase().endsWith(".pdf")
-    ) {
-      return "Only PDF files are allowed";
+    // Check file type based on allowedTypes
+    const isValidType = allowedTypes.some((type) => {
+      if (type === "pdf") {
+        return (
+          file.type.includes("pdf") || file.name.toLowerCase().endsWith(".pdf")
+        );
+      }
+      if (type === "image") {
+        return (
+          file.type.startsWith("image/") ||
+          /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(file.name)
+        );
+      }
+      return file.type.includes(type);
+    });
+
+    if (!isValidType) {
+      const typeNames = allowedTypes.map((type) => {
+        if (type === "image") return "Image files (JPG, PNG, GIF, etc.)";
+        if (type === "pdf") return "PDF files";
+        return type.toUpperCase() + " files";
+      });
+      return `Only ${typeNames.join(", ")} are allowed`;
     }
+
     if (file.size > maxSize * 1024 * 1024) {
       return `File size must be less than ${maxSize}MB`;
     }
