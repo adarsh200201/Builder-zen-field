@@ -35,6 +35,14 @@ import Careers from "./pages/Careers";
 import Contact from "./pages/Contact";
 import Affiliate from "./pages/Affiliate";
 import FeatureRequests from "./pages/FeatureRequests";
+import Help from "./pages/Help";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import Cookies from "./pages/Cookies";
+import Gdpr from "./pages/Gdpr";
+import Security from "./pages/Security";
+import ApiDocs from "./pages/ApiDocs";
+import Status from "./pages/Status";
 import {
   PowerPointToPdf,
   ExcelToPdf,
@@ -126,6 +134,14 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/affiliate" element={<Affiliate />} />
             <Route path="/feature-requests" element={<FeatureRequests />} />
+            <Route path="/help" element={<Help />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/cookies" element={<Cookies />} />
+            <Route path="/gdpr" element={<Gdpr />} />
+            <Route path="/security" element={<Security />} />
+            <Route path="/api-docs" element={<ApiDocs />} />
+            <Route path="/status" element={<Status />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
