@@ -300,9 +300,12 @@ const JpgToPdf = () => {
               <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
                 <FileUpload
                   onFilesSelect={handleFileUpload}
-                  accept="image/*"
+                  accept="image/*,.jpg,.jpeg,.png,.gif,.bmp,.webp"
                   multiple={true}
                   maxSize={25}
+                  allowedTypes={["image"]}
+                  uploadText="Select images or drop image files here"
+                  supportText="Supports JPG, PNG, GIF, BMP, WebP formats"
                 />
               </div>
             )}
