@@ -88,6 +88,10 @@ const App = () => (
             />
             <Route path="/sign-pdf" element={<SignPdf />} />
             <Route path="/watermark" element={<Watermark />} />
+            <Route path="/unlock-pdf" element={<UnlockPdf />} />
+            <Route path="/protect-pdf" element={<ProtectPdf />} />
+            <Route path="/organize-pdf" element={<OrganizePdf />} />
+            <Route path="/html-to-pdf" element={<HtmlToPdf />} />
             <Route path="/pdf-to-pdfa" element={<PdfToPdfA />} />
             <Route path="/repair-pdf" element={<RepairPdf />} />
             <Route path="/page-numbers" element={<PageNumbers />} />
