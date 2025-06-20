@@ -34,6 +34,7 @@ import Press from "./pages/Press";
 import Careers from "./pages/Careers";
 import Contact from "./pages/Contact";
 import Affiliate from "./pages/Affiliate";
+import FeatureRequests from "./pages/FeatureRequests";
 import {
   PowerPointToPdf,
   ExcelToPdf,
@@ -124,6 +125,7 @@ const App = () => (
             <Route path="/careers" element={<Careers />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/affiliate" element={<Affiliate />} />
+            <Route path="/feature-requests" element={<FeatureRequests />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
