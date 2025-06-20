@@ -9,6 +9,7 @@ export const PdfToPowerPoint = () => (
     icon={<FileText className="w-12 h-12 text-red-500" />}
     workingTool={true}
     redirectTo="/pdf-to-powerpoint"
+    isNew={true}
   />
 );
 
@@ -19,6 +20,7 @@ export const PdfToExcel = () => (
     icon={<FileText className="w-12 h-12 text-emerald-500" />}
     workingTool={true}
     redirectTo="/pdf-to-excel"
+    isNew={true}
   />
 );
 
