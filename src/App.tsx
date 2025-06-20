@@ -15,6 +15,7 @@ import PdfToWord from "./pages/PdfToWord";
 import WordToPdf from "./pages/WordToPdf";
 import PdfToPowerPoint from "./pages/PdfToPowerPoint";
 import PdfToExcel from "./pages/PdfToExcel";
+import JpgToPdf from "./pages/JpgToPdf";
 import Pricing from "./pages/Pricing";
 import Dashboard from "./pages/Dashboard";
 import Rotate from "./pages/Rotate";
@@ -64,6 +65,7 @@ const App = () => (
             <Route path="/word-to-pdf" element={<WordToPdf />} />
             <Route path="/pdf-to-powerpoint" element={<PdfToPowerPoint />} />
             <Route path="/pdf-to-excel" element={<PdfToExcel />} />
+            <Route path="/jpg-to-pdf" element={<JpgToPdf />} />
             <Route path="/pdf-to-excel" element={<PdfToExcel />} />
             <Route path="/word-to-pdf" element={<WordToPdf />} />
             <Route path="/powerpoint-to-pdf" element={<PowerPointToPdf />} />

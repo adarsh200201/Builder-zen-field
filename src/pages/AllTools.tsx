@@ -63,6 +63,9 @@ export const JpgToPdf = () => (
     toolName="JPG to PDF"
     toolDescription="Convert JPG images to PDF in seconds. Easily adjust orientation and margins."
     icon={<FileText className="w-12 h-12 text-pink-600" />}
+    workingTool={true}
+    redirectTo="/jpg-to-pdf"
+    isNew={true}
   />
 );
 
