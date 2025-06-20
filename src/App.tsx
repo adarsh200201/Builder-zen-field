@@ -13,6 +13,8 @@ import Convert from "./pages/Convert";
 import PdfToJpg from "./pages/PdfToJpg";
 import PdfToWord from "./pages/PdfToWord";
 import WordToPdf from "./pages/WordToPdf";
+import PdfToPowerPoint from "./pages/PdfToPowerPoint";
+import PdfToExcel from "./pages/PdfToExcel";
 import Pricing from "./pages/Pricing";
 import Dashboard from "./pages/Dashboard";
 import Rotate from "./pages/Rotate";
@@ -59,7 +61,9 @@ const App = () => (
             <Route path="/convert" element={<Convert />} />
             <Route path="/pdf-to-jpg" element={<PdfToJpg />} />
             <Route path="/pdf-to-word" element={<PdfToWord />} />
+            <Route path="/word-to-pdf" element={<WordToPdf />} />
             <Route path="/pdf-to-powerpoint" element={<PdfToPowerPoint />} />
+            <Route path="/pdf-to-excel" element={<PdfToExcel />} />
             <Route path="/pdf-to-excel" element={<PdfToExcel />} />
             <Route path="/word-to-pdf" element={<WordToPdf />} />
             <Route path="/powerpoint-to-pdf" element={<PowerPointToPdf />} />
