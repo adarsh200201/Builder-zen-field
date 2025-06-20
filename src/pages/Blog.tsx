@@ -299,7 +299,6 @@ const Blog = () => {
           <p className="text-sm text-text-light mt-3">
             Join 50,000+ subscribers. Unsubscribe anytime.
           </p>
-          </div>
         </div>
       </section>
 
