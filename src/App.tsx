@@ -20,6 +20,7 @@ import Watermark from "./pages/Watermark";
 import ProtectPdf from "./pages/ProtectPdf";
 import UnlockPdf from "./pages/UnlockPdf";
 import CropPdf from "./pages/CropPdf";
+import OrganizePdf from "./pages/OrganizePdf";
 import Pricing from "./pages/Pricing";
 import Dashboard from "./pages/Dashboard";
 import Rotate from "./pages/Rotate";
