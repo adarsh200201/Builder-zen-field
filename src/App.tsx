@@ -30,12 +30,8 @@ import {
   ExcelToPdf,
   EditPdf,
   SignPdf,
-  Watermark,
   RotatePdf,
   HtmlToPdf,
-  UnlockPdf,
-  ProtectPdf,
-  OrganizePdf,
   PdfToPdfA,
   RepairPdf,
   PageNumbers,
@@ -43,7 +39,6 @@ import {
   OcrPdf,
   ComparePdf,
   RedactPdf,
-  CropPdf,
 } from "./pages/AllTools";
 
 // Import placeholder components with aliases to avoid conflicts
@@ -51,6 +46,11 @@ import {
   PdfToPowerPoint as PdfToPowerPointPlaceholder,
   PdfToExcel as PdfToExcelPlaceholder,
   JpgToPdf as JpgToPdfPlaceholder,
+  Watermark as WatermarkPlaceholder,
+  UnlockPdf as UnlockPdfPlaceholder,
+  ProtectPdf as ProtectPdfPlaceholder,
+  OrganizePdf as OrganizePdfPlaceholder,
+  CropPdf as CropPdfPlaceholder,
 } from "./pages/AllTools";
 import NotFound from "./pages/NotFound";
 
