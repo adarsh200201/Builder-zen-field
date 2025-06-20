@@ -1,4 +1,5 @@
 import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -332,6 +333,8 @@ const Press = () => {
           </div>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };

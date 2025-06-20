@@ -1,4 +1,5 @@
 import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -298,8 +299,11 @@ const Blog = () => {
           <p className="text-sm text-text-light mt-3">
             Join 50,000+ subscribers. Unsubscribe anytime.
           </p>
+          </div>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };
