@@ -173,10 +173,12 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
           <div>
             <h3 className="text-heading-small text-text-dark mb-2">
-              {isDragOver ? "Drop your PDF files here" : "Select PDF files"}
+              {uploadText.split(" or ")[0]}
             </h3>
             <p className="text-body-small text-text-light mb-4">
-              or drop PDF files here
+              {uploadText.includes(" or ")
+                ? uploadText.split(" or ")[1]
+                : supportText}
             </p>
 
             <Button
