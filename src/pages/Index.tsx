@@ -61,22 +61,22 @@ const Index = () => {
       isNew: true,
     },
     {
-      name: "PDF to PowerPoint",
+      title: "PDF to PowerPoint",
       description:
         "Turn your PDF files into easy to edit PPT and PPTX slideshows.",
-      icon: <FileText className="w-8 h-8" />,
+      icon: FileText,
       href: "/pdf-to-powerpoint",
-      gradient: "from-red-500 to-red-600",
+      color: "from-red-500 to-red-600",
       isWorking: true,
       isNew: true,
     },
     {
-      name: "PDF to Excel",
+      title: "PDF to Excel",
       description:
         "Pull data straight from PDFs into Excel spreadsheets in a few short seconds.",
-      icon: <FileText className="w-8 h-8" />,
+      icon: FileText,
       href: "/pdf-to-excel",
-      gradient: "from-emerald-500 to-emerald-600",
+      color: "from-emerald-500 to-emerald-600",
       isWorking: true,
       isNew: true,
     },
