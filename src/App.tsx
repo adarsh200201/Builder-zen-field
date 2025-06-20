@@ -21,6 +21,8 @@ import ProtectPdf from "./pages/ProtectPdf";
 import UnlockPdf from "./pages/UnlockPdf";
 import CropPdf from "./pages/CropPdf";
 import OrganizePdf from "./pages/OrganizePdf";
+import PageNumbers from "./pages/PageNumbers";
+import EditPdf from "./pages/EditPdf";
 import Pricing from "./pages/Pricing";
 import Dashboard from "./pages/Dashboard";
 import Rotate from "./pages/Rotate";
@@ -28,13 +30,11 @@ import TestAllTools from "./pages/TestAllTools";
 import {
   PowerPointToPdf,
   ExcelToPdf,
-  EditPdf,
   SignPdf,
   RotatePdf,
   HtmlToPdf,
   PdfToPdfA,
   RepairPdf,
-  PageNumbers,
   ScanToPdf,
   OcrPdf,
   ComparePdf,
@@ -51,6 +51,8 @@ import {
   ProtectPdf as ProtectPdfPlaceholder,
   OrganizePdf as OrganizePdfPlaceholder,
   CropPdf as CropPdfPlaceholder,
+  PageNumbers as PageNumbersPlaceholder,
+  EditPdf as EditPdfPlaceholder,
 } from "./pages/AllTools";
 import NotFound from "./pages/NotFound";
 
