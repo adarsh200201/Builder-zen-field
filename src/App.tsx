@@ -64,9 +64,9 @@ const App = () => (
             <Route path="/split" element={<Split />} />
             <Route path="/compress" element={<Compress />} />
             <Route path="/convert" element={<Convert />} />
-            <Route path="/pdf-to-jpg" element={<PdfToJpg />} />
-            <Route path="/pdf-to-word" element={<PdfToWord />} />
-            <Route path="/word-to-pdf" element={<WordToPdf />} />
+            <Route path="/pdf-to-powerpoint" element={<PdfToPowerPoint />} />
+            <Route path="/pdf-to-excel" element={<PdfToExcel />} />
+            <Route path="/jpg-to-pdf" element={<JpgToPdf />} />
             <Route
               path="/pdf-to-powerpoint-placeholder"
               element={<PdfToPowerPointPlaceholder />}
