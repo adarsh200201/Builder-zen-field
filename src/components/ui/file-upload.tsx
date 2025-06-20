@@ -188,11 +188,11 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 document.querySelector('input[type="file"]')?.click()
               }
             >
-              Select PDF files
+              {uploadText.split(" or ")[0]}
             </Button>
 
             <p className="text-xs text-text-light mt-2">
-              Max file size: {maxSize}MB
+              {supportText} • Max file size: {maxSize}MB
             </p>
           </div>
         </div>
