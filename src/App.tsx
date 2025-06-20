@@ -87,6 +87,7 @@ const App = () => (
               element={<JpgToPdfPlaceholder />}
             />
             <Route path="/sign-pdf" element={<SignPdf />} />
+            <Route path="/watermark" element={<Watermark />} />
             <Route path="/pdf-to-pdfa" element={<PdfToPdfA />} />
             <Route path="/repair-pdf" element={<RepairPdf />} />
             <Route path="/page-numbers" element={<PageNumbers />} />
