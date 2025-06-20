@@ -97,7 +97,6 @@ const App = () => (
             <Route path="/crop-pdf" element={<CropPdf />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/rotate-pdf" element={<Rotate />} />
             <Route path="/test-all-tools" element={<TestAllTools />} />
             <Route path="/tools" element={<Index />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
