@@ -21,12 +21,9 @@ import Dashboard from "./pages/Dashboard";
 import Rotate from "./pages/Rotate";
 import TestAllTools from "./pages/TestAllTools";
 import {
-  PdfToPowerPoint,
-  PdfToExcel,
   PowerPointToPdf,
   ExcelToPdf,
   EditPdf,
-  JpgToPdf,
   SignPdf,
   Watermark,
   RotatePdf,
@@ -42,6 +39,13 @@ import {
   ComparePdf,
   RedactPdf,
   CropPdf,
+} from "./pages/AllTools";
+
+// Import placeholder components with aliases to avoid conflicts
+import {
+  PdfToPowerPoint as PdfToPowerPointPlaceholder,
+  PdfToExcel as PdfToExcelPlaceholder,
+  JpgToPdf as JpgToPdfPlaceholder,
 } from "./pages/AllTools";
 import NotFound from "./pages/NotFound";
 
@@ -63,22 +67,22 @@ const App = () => (
             <Route path="/pdf-to-jpg" element={<PdfToJpg />} />
             <Route path="/pdf-to-word" element={<PdfToWord />} />
             <Route path="/word-to-pdf" element={<WordToPdf />} />
-            <Route path="/pdf-to-powerpoint" element={<PdfToPowerPoint />} />
-            <Route path="/pdf-to-excel" element={<PdfToExcel />} />
-            <Route path="/jpg-to-pdf" element={<JpgToPdf />} />
-            <Route path="/pdf-to-excel" element={<PdfToExcel />} />
-            <Route path="/word-to-pdf" element={<WordToPdf />} />
+            <Route
+              path="/pdf-to-powerpoint-placeholder"
+              element={<PdfToPowerPointPlaceholder />}
+            />
             <Route path="/powerpoint-to-pdf" element={<PowerPointToPdf />} />
+            <Route
+              path="/pdf-to-excel-placeholder"
+              element={<PdfToExcelPlaceholder />}
+            />
             <Route path="/excel-to-pdf" element={<ExcelToPdf />} />
             <Route path="/edit-pdf" element={<EditPdf />} />
-            <Route path="/jpg-to-pdf" element={<JpgToPdf />} />
+            <Route
+              path="/jpg-to-pdf-placeholder"
+              element={<JpgToPdfPlaceholder />}
+            />
             <Route path="/sign-pdf" element={<SignPdf />} />
-            <Route path="/watermark" element={<Watermark />} />
-            <Route path="/rotate-pdf" element={<RotatePdf />} />
-            <Route path="/html-to-pdf" element={<HtmlToPdf />} />
-            <Route path="/unlock-pdf" element={<UnlockPdf />} />
-            <Route path="/protect-pdf" element={<ProtectPdf />} />
-            <Route path="/organize-pdf" element={<OrganizePdf />} />
             <Route path="/pdf-to-pdfa" element={<PdfToPdfA />} />
             <Route path="/repair-pdf" element={<RepairPdf />} />
             <Route path="/page-numbers" element={<PageNumbers />} />
